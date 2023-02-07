@@ -86,6 +86,7 @@ namespace BlackJack.WinForm
             newPlayerHandControl.Visible = true;
             _playerLayoutPanel.Controls.Add(newPlayerHandControl);
             _controller.SeedSplitHandWithNewCard(newPlayerHandControl.PlayerHand);
+            _controller.RemoveCardForSplitFromActivePlayerHand();
             _controller.IncreaseBet(newPlayerHandControl.PlayerHand, double.Parse(_tbBet.Text));
             newPlayerHandControl.DeactivateButtons();
             //add another card to first hand
