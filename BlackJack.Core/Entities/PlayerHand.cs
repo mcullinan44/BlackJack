@@ -51,7 +51,14 @@
             Result = Result.Push;
             OnPushHand?.Invoke(this);
         }
-
+        
+        public void RemoveCard(Card cardToRemove)
+        {
+            OnCardRemovedForSplitEventArgs args = new OnCardRemovedForSplitEventArgs(cardToRemove);
+            this.Cards.Remove(cardToRemove);
+            OnTakeCardForSplit?.Invoke(this, args);
+        }
+        
         public void Blackjack()
         {
             Result = Result.Blackjack;
