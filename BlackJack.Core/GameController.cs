@@ -181,9 +181,13 @@ namespace Blackjack.Core
         public void SeedSplitHandWithNewCard(PlayerHand playerHand)
         {
             Card result = ActivePlayer.ActiveHand.Cards[1];
-            OnCardRemovedForSplitEventArgs args = new OnCardRemovedForSplitEventArgs(result);
-            OnTakeCardForSplit?.Invoke(this, args);
             playerHand.AddCard(result);
+
+        }
+
+        public void RemoveCardForSplitFromActivePlayerHand()
+        {
+            ActivePlayer.ActiveHand.RemoveCard(ActivePlayer.ActiveHand.Cards[1]);
         }
 
         private async void GiveDealerACardAsync()
