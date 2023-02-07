@@ -1,0 +1,116 @@
+﻿@page "/"
+
+@using BlackJack.Wasm.Components
+@using Blackjack.Core.Entities
+@using Blazor.Extensions
+@using Blazor.Extensions.Canvas
+@using Blazor.Extensions.Canvas.Canvas2D
+@using System.Net.Mime
+@using SixLabors.ImageSharp
+@using SixLabors.ImageSharp.PixelFormats
+@inject IJSRuntime JsRuntime;
+
+<button @onclick="Callback">Deal Card</button>
+<div id="canvasHolder">
+    <BECanvas Width="1000" Height="1000" @ref="CanvasRef">
+    
+    
+      
+    </BECanvas>
+    
+    <Grid></Grid>
+
+
+
+</div>
+
+<img @ref="ImageMap" src="images/Cards.PNG">
+
+
+@code
+{
+    private Canvas2DContext ctx;
+    protected BECanvasComponent CanvasRef;
+    private DateTime LastRender;
+    private readonly List<Card> _cardList = new List<Card>();
+    protected string Image64 { get; set; }
+    ElementReference ImageMap;
+
+    int x = 300;
+    int y = 300;
+    int scaleX = -1;
+    double angle = 180;
+    int scaleDirection = -1;
+    int scaleDelta = 5;
+    double pi2 = Math.PI * 2;
+    int imgCount = 2;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        this.ctx = await CanvasRef.CreateCanvas2DAsync();
+        await JsRuntime.InvokeAsync<object>("initRenderJS", DotNetObjectReference.Create(this));
+
+        await this.ctx.DrawImageAsync(ImageMap, 100, 100, 100, 100);
+        await this.ctx.SetFillStyleAsync("blue");
+        await this.ctx.FillRectAsync(10, 100, 100, 100);
+        await this.ctx.SetFontAsync("48px serif");
+        await this.ctx.StrokeTextAsync("Hello Blazor!!!", 10, 100);
+
+        await base.OnInitializedAsync();
+    }
+
+    private async Task Callback(MouseEventArgs obj)
+    {
+        Card card = new Card(Suit.Spades, 8, CardType.Numeric);
+        _cardList.Add(card);
+
+        //await JsRuntime.InvokeAsync<object>("dealCard", CanvasRef);
+        /*
+         * img	The image to be drawn
+            sx	The x coordinate where to start clipping
+            sy	The y coordinate where to start clipping
+            swidth	The width of image to be draw(clipping)
+            sheight	The height of image to be draw(clipping)
+            x	The x coordinate on the canvas where the image to be drawn
+            y	The y coordinate on the canvas where the image to be drawn
+            width	The width of the image(resizing it)
+            height	The height of the image(resizing it)
+         */
+ 
+
+
+        await AnimateCardDeal();
+    }
+
+    [JSInvokable]
+    public async ValueTask AnimateCardDeal()
+    {
+        await this.ctx.ClearRectAsync(0, 0, 1000, 1000);
+        await this.ctx.TranslateAsync(x, y);
+        await this.ctx.ScaleAsync(scaleX / 100, 1);
+        if (scaleX / 100 >= 0)
+        {
+            await this.ctx.DrawImageAsync(ImageMap, 100, 100, 100, 100);
+            await this.ctx.SetFillStyleAsync("blue");
+            await this.ctx.FillRectAsync(10, 100, 100, 100);
+            await this.ctx.SetFontAsync("48px serif");
+            await this.ctx.StrokeTextAsync("Hello Blazor!!!", 10, 100);
+
+            //await this.ctx.DrawImageAsync(ImageMap, 0, 0, -100 / 2, -200 / 2);
+
+        }
+
+        await this.ctx.SetTransformAsync(1, 0, 0, 1, 0, 0);
+        angle += pi2 / 720;
+        scaleX += scaleDirection * scaleDelta;
+
+        //if (scaleX > 90)
+        //    return;
+        if (scaleX < -100 || scaleX > 100) 
+        {
+            scaleDirection *= -1;
+            scaleX += scaleDirection * scaleDelta;
+        }
+      //  await AnimateCardDeal();
+    }
+}

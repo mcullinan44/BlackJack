@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.ComponentModel;
+using BlackJack.Core;
 using Blackjack.Core.Entities;
 
 

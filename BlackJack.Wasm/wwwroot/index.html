@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>BlackJack.Wasm</title>
+    <base href="/" />
+    <link href="css/bootstrap/bootstrap.min.css" rel="stylesheet" />
+    <link href="css/app.css" rel="stylesheet" />
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link href="BlackJack.Wasm.styles.css" rel="stylesheet" />
+    <link href="manifest.json" rel="manifest" />
+    <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png" />
+    <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png" />
+</head>
+
+<body>
+    <div id="app">
+        <svg class="loading-progress">
+            <circle r="40%" cx="50%" cy="50%" />
+            <circle r="40%" cx="50%" cy="50%" />
+        </svg>
+        <div class="loading-progress-text"></div>
+    </div>
+
+    <div id="blazor-error-ui">
+        An unhandled error has occurred.
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>
+    <script src="_framework/blazor.webassembly.js"></script>
+    <script src="_content/BlazorAnimate/blazorAnimateInterop.js"></script>
+    <script src="_content/Blazor.Extensions.Canvas/blazor.extensions.canvas.js"></script>
+    <script>navigator.serviceWorker.register('service-worker.js');</script>
+<script>
+    function renderJS(timeStamp) {
+        //theInstance.invokeMethodAsync('DealPlayerCard', timeStamp);
+
+        //kicks off the event loop
+
+        //window.requestAnimationFrame(renderJS);
+    }
+
+    function dealCard(can) {
+        let canvas = document.getElementById(can.canvasReference.id);
+        var ctx = canvas.getContext("2d");
+        var cw = canvas.width;
+        var ch = canvas.height;
+
+        var x = 300;
+        var y = 300;
+        var scaleX = -1;
+        var angle = 180;
+        var scaleDirection = -1;
+        var scaleDelta = 5;
+        var PI2 = Math.PI * 2;
+
+
+        var imgCount = 2;
+        var front = new Image(); front.onload = deal; front.src = "https://localhost:7216/images/cards/a_h.png";
+        var back = new Image(); back.onload = deal; back.src = "https://localhost:7216/images/cards/back.png";
+
+
+        function deal() {
+            if (--imgCount > 0) { return; }
+            animateDeal();
+        }
+
+        function animateDeal() {
+            ctx.clearRect(0, 0, cw, ch);
+            //x => Distance to move in the horizontal direction.Positive values are to the right, and negative to the left.
+            //y => Distance to move in the vertical direction. Positive values are down, and negative are up.
+            //changes the center point of the object
+            ctx.translate(x, y);
+            ctx.scale(scaleX / 100, 1);
+            if (scaleX / 100 >= 0) {
+                ctx.drawImage(front, -front.width / 2, -front.height / 2);
+            } else {
+                ctx.drawImage(back, -back.width / 2, -back.height / 2);
+            }
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+            angle += PI2 / 720;
+            scaleX += scaleDirection * scaleDelta;
+
+            if (scaleX > 90)
+                return;
+
+            if (scaleX < -100 || scaleX > 100) {
+                scaleDirection *= -1;
+                scaleX += scaleDirection * scaleDelta;
+            }
+            requestAnimationFrame(animateDeal);
+        }
+    }
+
+    function resizeCanvasToFitWindow() {
+        var holder = document.getElementById('canvasHolder');
+        var canvas = holder.querySelector('canvas');
+        if (canvas) {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            //theInstance.invokeMethodAsync('ResizeInBlazor', canvas.width, canvas.height);
+        }
+    }
+
+    window.initRenderJS = (instance) => {
+        window.theInstance = instance;
+        window.addEventListener("resize", resizeCanvasToFitWindow);
+        resizeCanvasToFitWindow();
+        window.requestAnimationFrame(renderJS);
+    };
+</script>
+
+
+</body>
+</html>

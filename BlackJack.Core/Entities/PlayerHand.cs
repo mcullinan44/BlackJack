@@ -1,4 +1,7 @@
-﻿namespace Blackjack.Core.Entities
+﻿using System.Dynamic;
+using BlackJack.Core;
+
+namespace Blackjack.Core.Entities
 {
     public class PlayerHand : Hand
     {
@@ -74,7 +77,7 @@
         {
             Cards.Add(card);
             OnCardReceivedEventArgs args = new OnCardReceivedEventArgs(this, card);
-            OnCardReceived.Invoke(this, args);
+            OnCardReceived?.Invoke(this, args);
         }
 
         public override bool CheckIsBust()

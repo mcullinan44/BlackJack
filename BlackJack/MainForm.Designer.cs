@@ -146,6 +146,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
             this.BackColor = System.Drawing.Color.DarkGreen;
+            this.BackgroundImage = global::BlackJack.WinForm.ImageResource.poker_table_felt;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(1562, 1586);
             this.Controls.Add(this._btnBet);

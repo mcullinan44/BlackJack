@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using Blackjack.Core;
+using BlackJack.Core;
 using Blackjack.Core.Counting;
 using Blackjack.Core.Entities;
 using Blackjack.Core.ShoeData;

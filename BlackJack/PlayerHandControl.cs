@@ -1,4 +1,5 @@
 ﻿using Blackjack.Core;
+using BlackJack.Core;
 using Blackjack.Core.Entities;
 
 namespace BlackJack.WinForm

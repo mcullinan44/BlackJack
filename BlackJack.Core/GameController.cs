@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Headers;
+using BlackJack.Core;
 using Blackjack.Core.Entities;
 
 namespace Blackjack.Core
@@ -100,13 +101,13 @@ namespace Blackjack.Core
             DealARoundOfCards();
 
             await Task.Delay(500);
-            GiveDealerACard();
+            GiveDealerACardAsync();
 
-            await Task.Delay(500);
+            await Task.Delay(250);
             DealARoundOfCards();
 
-            await Task.Delay(500);
-            GiveDealerACard();
+            await Task.Delay(250);
+            GiveDealerACardAsync();
 
             //check if the dealer has blackjack.
             if (Dealer.Hand.CurrentScore == 21)
@@ -185,7 +186,7 @@ namespace Blackjack.Core
             playerHand.AddCard(result);
         }
 
-        private void GiveDealerACard()
+        private async void GiveDealerACardAsync()
         {
             Card card = this.Shoe.NextCard;
             Dealer.Hand.Cards.Add(card);
@@ -201,7 +202,7 @@ namespace Blackjack.Core
             OnBankrollChange?.Invoke(this, args);
         }
 
-        public void FinishHand(Player player)
+        public async void FinishHand(Player player)
         {
             PlayerHand nextHand = player.CurrentHands.FirstOrDefault(i => i.State == State.NotYetPlayed);
             //move to the next player if there are no more unresolved hands.
@@ -218,19 +219,22 @@ namespace Blackjack.Core
                 if (everythingIsbusted)
                 {
                     //do nothing
+                    await Task.Delay(300);
                     OnGameEnd?.Invoke(this, null);
                 }
                 else if (nextPlayer == null)
                 {
+                    await Task.Delay(200);
                     OnShowAllCards(this, null);
 
                     while (!Dealer.Hand.CheckIsBust() && Dealer.Hand.CurrentScore <= 16)
                     {
-                        GiveDealerACard();
+                        await Task.Delay(500);
+                        GiveDealerACardAsync();
                     }
 
                     CalculateScore();
-
+                    await Task.Delay(200);
                     OnGameEnd(this, null);
                 }
                 else

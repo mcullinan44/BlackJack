@@ -1,14 +1,15 @@
-﻿using System;
+﻿using Blackjack.Core.Entities;
 
-namespace Blackjack.Core.Entities
+namespace BlackJack.Core
 {
     public static class GameEvents
     {
+        //TODO change to EventHandler
+        
         public delegate void OnBankrollChange(object sender, OnBankrollChangedEventArgs e);
         public delegate void OnShowAllCards(object sender, EventArgs e);
         public delegate void OnActivate(object sender, EventArgs e);
         public delegate void OnCardReceived(object sender, OnCardReceivedEventArgs args);
-
         public delegate void OnTakeCardForSplit(object sender, OnCardRemovedForSplitEventArgs e);
         public delegate void OnDealerCardReceived(object sender, OnCardReceivedEventArgs args);
         public delegate void OnBust(object sender, OnCardReceivedEventArgs args);

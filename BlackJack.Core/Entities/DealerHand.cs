@@ -1,4 +1,6 @@
-﻿namespace Blackjack.Core.Entities
+﻿using BlackJack.Core;
+
+namespace Blackjack.Core.Entities
 {
     public class DealerHand : Hand
     {

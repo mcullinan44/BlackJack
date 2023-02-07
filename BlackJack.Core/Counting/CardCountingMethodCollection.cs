@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using BlackJack.Core;
 using Blackjack.Core.Entities;
 
 
