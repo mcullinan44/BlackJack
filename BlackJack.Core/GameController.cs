@@ -112,13 +112,13 @@ namespace Blackjack.Core
             DealARoundOfCards();
 
             await Task.Delay(500);
-            GiveDealerACardAsync();
+            GiveDealerACard();
 
             await Task.Delay(250);
             DealARoundOfCards();
 
             await Task.Delay(250);
-            GiveDealerACardAsync();
+            GiveDealerACard();
 
             //check if the dealer has blackjack.
             if (Dealer.Hand.CurrentScore == 21)
@@ -168,6 +168,13 @@ namespace Blackjack.Core
             }
         }
 
+        public void Hit(Player player)
+        {
+            Card card = Shoe.NextCard;
+
+            player.ActiveHand.AddCard(card);
+        }
+
         private void AdjustPlayerBankRoll(Player player, double amount)
         {
             player.PlayerbankRoll += amount;
@@ -175,7 +182,7 @@ namespace Blackjack.Core
             OnBankrollChange?.Invoke(this, args);
         }
 
-        public void GivePlayerNextCardInShoe(PlayerHand playerHand, bool checkBlackJackImmediately)
+        private void GivePlayerNextCardInShoe(PlayerHand playerHand, bool checkBlackJackImmediately)
         {
             Card card = Shoe.NextCard;
 
@@ -201,7 +208,7 @@ namespace Blackjack.Core
             ActivePlayer.ActiveHand.RemoveCard(ActivePlayer.ActiveHand.Cards[1]);
         }
 
-        private async void GiveDealerACardAsync()
+        private void GiveDealerACard()
         {
             Card card = this.Shoe.NextCard;
             Dealer.Hand.Cards.Add(card);

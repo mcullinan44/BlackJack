@@ -87,23 +87,9 @@ namespace Blackjack.Core.Entities
             OnCardReceived?.Invoke(this, args);
         }
 
-        public override bool CheckIsBust()
-        {
-            if (CurrentScore <= 21) return false;
-            Result = Result.Bust;
-            OnCardReceivedEventArgs args = new OnCardReceivedEventArgs(this, null);
-            OnBust?.Invoke(this, args);
-            return true;
-        }
 
-        public void Hit()
-        {
-            Controller.GivePlayerNextCardInShoe(this, false);
-            if(CheckIsBust())
-            {
-                Controller.FinishHand(this.Player);
-            }
-        }
+
+ 
 
         public void DoubleDown()
         {

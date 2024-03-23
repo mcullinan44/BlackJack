@@ -4,13 +4,11 @@ namespace Blackjack.Core.Entities
 {
     public abstract class Hand
     {
-        protected GameController Controller;
 
-        protected Hand(GameController controller)
+        protected Hand()
         {
             Cards = new List<Card>();
             Result = new Result();
-            Controller = controller;
         }
 
         public List<Card> Cards { get; }

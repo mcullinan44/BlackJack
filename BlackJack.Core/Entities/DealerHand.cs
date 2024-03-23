@@ -10,11 +10,11 @@ namespace Blackjack.Core.Entities
         public event GameEvents.OnDealerBust OnDealerBust;
         public event GameEvents.OnPushHand OnPushHand;
 
-        public DealerHand(GameController gameController)
-            : base(gameController)
+        public DealerHand()
+            : base()
         {
-            this.Controller = gameController;
-            this.Controller.Dealer.Hand = this;
+
+
         }
 
         public void Win()
