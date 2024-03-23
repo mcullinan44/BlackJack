@@ -6,7 +6,7 @@
 
         public Dealer() {
           
-   
+            Hand = new DealerHand();
         }
 
         public DealerHand Hand { get; set; }

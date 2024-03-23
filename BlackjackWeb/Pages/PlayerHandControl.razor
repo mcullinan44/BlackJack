@@ -1,0 +1,269 @@
+﻿@using Blackjack.Core
+@using BlackJack.Core
+@using Blackjack.Core.Entities
+@using Microsoft.AspNetCore.DataProtection.XmlEncryption
+@using System.Xml
+@using System.Net.Mime
+@using System.Diagnostics.Eventing.Reader
+
+<p>@this.Player.Name</p>
+<div>
+    Bet: <label>@Bet.ToString("c0")</label>
+</div>
+
+@*Hand*@
+<div>
+    Hand:
+    @foreach (Card card in this.PlayerHand.Cards)
+    {
+        <span>
+                @if (card.CardType == CardType.Numeric)
+                {
+                    @card.Value
+                } 
+                else if (card.CardType == CardType.Jack)
+                {  
+                    @("J")
+                }
+                else if (card.CardType == CardType.Queen)
+                {
+                    @("Q")
+                }
+            else if (card.CardType == CardType.King)
+            {  
+                @("K")
+            }
+            else
+            {
+                @("A")
+            }
+                @card.CardSuit.ToString().TrimEnd(';');
+
+        </span>
+    }
+    <br/>
+    Current Score: @this.PlayerHand.CurrentScore;
+</div>
+
+
+@*Buttons*@
+<div>
+    
+    @if (_hittable)
+    {
+        <button @onclick="OnHit">Hit</button>
+    }
+    
+    @if (_standable)
+    {
+        <button @onclick="OnStand">Stand</button>
+
+    }
+    
+    @if (_doubleable)
+    {
+        <button @onclick="OnDouble">Double</button>
+    }
+    
+    @if (_splitable)
+    {
+        <button @onclick="OnSplit">Split</button>
+    }
+</div>
+<div>
+    <div>
+        @_resultMessage
+    </div>
+    
+    @if (_winningAmount > 0)
+    {
+        <div>
+
+        </div>
+    }
+    
+</div>
+@code {
+
+    [Parameter]
+    public Player Player { get; set; }
+
+    [Parameter]
+    public PlayerHand PlayerHand { get; set; }
+
+    [Parameter] 
+    public GameController GameController { get; set; }
+
+    [Parameter]
+    public double Bet { get; set; }
+
+
+    private bool _hittable;
+
+    private bool _standable;
+
+    private bool _doubleable;
+
+    private bool _splitable;
+
+    private string _resultMessage;
+
+    private double _winningAmount;
+
+    private bool _hasblackjack;
+
+    private bool _isplaying;
+
+    protected override Task OnInitializedAsync()
+    {
+        PlayerHand.OnBetChanged +=  PlayerHandOnOnBetChanged;
+        PlayerHand.OnCardReceived += PlayerHandOnOnCardReceived;
+        PlayerHand.OnBust +=   PlayerHandOnOnBust;
+        PlayerHand.OnBlackjack +=   PlayerHandOnOnBlackjack;
+        PlayerHand.OnWinHand += PlayerHandOnOnWinHand;
+        PlayerHand.OnLoseHand +=    PlayerHandOnOnLoseHand;
+        PlayerHand.OnPushHand +=    PlayerHandOnOnPushHand;
+        PlayerHand.OnActivate +=    PlayerHandOnOnActivate;
+        PlayerHand.OnTakeCardForSplit +=  PlayerHandOnOnTakeCardForSplit;
+        GameController.OnGameEnd += GameControllerOnOnGameEnd;
+        return base.OnInitializedAsync();
+    }
+
+    private void GameControllerOnOnGameEnd(object sender, EventArgs e)
+    {
+        _doubleable = _hittable = _standable = _splitable = false;
+        StateHasChanged();
+    }
+
+    private void PlayerHandOnOnTakeCardForSplit(object sender, OnCardRemovedForSplitEventArgs e)
+    {
+       
+
+    }
+
+    private void PlayerHandOnOnActivate(object sender, EventArgs e)
+    {
+        
+        ActivateButtons();
+    }
+
+    private void PlayerHandOnOnPushHand(Hand hand)
+    {
+        _resultMessage = "Push with " + hand.CurrentScore;
+        _isplaying = false;
+    }
+
+    private void PlayerHandOnOnLoseHand(Hand hand)
+    {
+        _resultMessage = "You lost " + ((PlayerHand)hand).CurrentBet.Amount.ToString("c0") + " with score of " + hand.CurrentScore;
+        _isplaying = false;
+    }
+
+    private void PlayerHandOnOnWinHand(Hand hand)
+    {
+        _resultMessage = "You win " + ((PlayerHand)hand).CurrentBet.Amount.ToString("c0") + " with score of " + hand.CurrentScore + ". Dealer has " + GameController.Dealer.Hand.CurrentScore;
+        _isplaying = false;
+    }
+
+    private void PlayerHandOnOnBlackjack(object sender, OnCardReceivedEventArgs args)
+    {
+        _resultMessage = "BLACKJACK!!!! You win " + (PlayerHand.CurrentBet.Amount * 1.5).ToString("c0");   
+        _isplaying = false;
+    }
+
+    private void PlayerHandOnOnBust(object sender, OnCardReceivedEventArgs args)
+    {
+        _resultMessage = "YOU BUST!! " + args.Hand.CurrentScore + ". " + "Lost " + ((PlayerHand)args.Hand).CurrentBet.Amount.ToString("c0");
+        _isplaying = false;
+    }
+
+    private void PlayerHandOnOnCardReceived(object sender, OnCardReceivedEventArgs args)
+    {
+        if(PlayerHand.State == State.Playing)
+        {
+            ActivateButtons();
+        }
+        StateHasChanged();
+    }
+
+    private void PlayerHandOnOnBetChanged(object sender, OnBetChangedEventArgs args)
+    {
+        Bet = args.Bet.Amount;
+    }
+
+    private void OnHit(MouseEventArgs obj)
+    {
+        PlayerHand.Hit();
+        StateHasChanged();
+    }
+
+    private void OnStand(MouseEventArgs obj)
+    {
+        PlayerHand.Stand();
+        StateHasChanged();
+    }
+
+    private void OnSplit(MouseEventArgs obj)
+    {
+     
+
+    }
+
+    private void OnDouble(MouseEventArgs obj)
+    {
+        PlayerHand.DoubleDown();
+        DisableButtons();
+        StateHasChanged();
+    }
+
+    private void DisableButtons()
+    {
+        _hittable = _standable = _splitable = _doubleable = false;
+    }
+
+    private void ActivateButtons()
+    {
+        _hittable = true;
+        _standable = true;
+    //can't split more than two times.
+        if(GameController.ActivePlayer.CurrentHands.Count == 3)
+        {
+            _splitable = false;
+            
+        }
+        if (PlayerHand.Cards.Count == 2)
+        {
+            if (PlayerHand.Cards[0].CardType == PlayerHand.Cards[1].CardType
+                && PlayerHand.Cards[0].Value == PlayerHand.Cards[1].Value)
+            {
+                _splitable = true;
+                
+            }
+            _doubleable = true;
+        }
+        else
+        {
+            _doubleable = _splitable = false;
+        }
+    }
+
+    public void DeactivateButtons()
+    {
+        _hittable = _splitable = _standable = _doubleable =  false;
+    }
+
+
+    private bool IsPlaying
+    {
+        set
+        {
+            if(!value)
+            {
+                DeactivateButtons();
+
+            }
+        }
+    }
+
+    
+}

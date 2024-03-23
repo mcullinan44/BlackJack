@@ -1,0 +1,38 @@
+﻿@page "/"
+@using Blackjack.Core
+@using BlackJack.Core
+@using Blackjack.Core.Entities
+
+What is your name? <input type="text" @bind=_player.Name/>
+<br/>
+<button @onclick="StartNewGame">New Game</button>
+
+
+@if (_ready)
+{
+    <GameSession Controller="_controller" Player="_player"></GameSession>
+}
+
+
+@code {
+    private Player _player;
+    private GameController _controller;
+    private bool _ready;
+    protected override Task OnInitializedAsync()
+    {
+        this._player = new Player(1);
+        return base.OnInitializedAsync();
+    }
+
+
+    private void StartNewGame()
+    {
+        _controller = new GameController(4);
+        
+        _controller.AddPlayer(_player);
+        _player.PlayerbankRoll = 1000;
+        _controller.SetPlayerActive(_player);
+        _controller.ResetBoard();
+        _ready = true;
+    }
+}

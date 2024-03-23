@@ -31,7 +31,7 @@ namespace BlackJack.WinForm
             _controller.OnGameEnd += controller_onGameEnd;
             _controller.MinimumBet = Defaults.MINIMUM_BET;
             _controller.NumberOfDecks = Defaults.NUMBER_OF_DECKS;
-            _controller.AddPlayer("Player 1", Defaults.BANKROLL);
+            //_controller.AddPlayer("Player 1", Defaults.BANKROLL);
             _controller.ShuffleAll();
 
             ShoeRemainingCollection collection = new ShoeRemainingCollection(_controller);

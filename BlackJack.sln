@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33110.190
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlackJack.WinForm", "BlackJack\BlackJack.WinForm.csproj", "{510CB0D8-1BD0-44C2-A412-2326CE048BC8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlackJack.WinForm", "BlackJack\BlackJack.WinForm.csproj", "{510CB0D8-1BD0-44C2-A412-2326CE048BC8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlackJack.Core", "BlackJack.Core\BlackJack.Core.csproj", "{6DE45465-1296-4715-AD1F-9D8442C3B153}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlackJack.Core", "BlackJack.Core\BlackJack.Core.csproj", "{6DE45465-1296-4715-AD1F-9D8442C3B153}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{9B437D7A-B5B2-4259-A542-76E7FF4EE89F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "Tests\Tests.csproj", "{9B437D7A-B5B2-4259-A542-76E7FF4EE89F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlackJack.Wasm", "BlackJack.Wasm\BlackJack.Wasm.csproj", "{8112D541-FB68-4D8C-9755-ED0B63C460B3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlackjackWeb", "BlackjackWeb\BlackjackWeb.csproj", "{2075A0D2-C055-408E-B590-52F7C66E4FFD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,10 +29,10 @@ Global
 		{9B437D7A-B5B2-4259-A542-76E7FF4EE89F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9B437D7A-B5B2-4259-A542-76E7FF4EE89F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9B437D7A-B5B2-4259-A542-76E7FF4EE89F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8112D541-FB68-4D8C-9755-ED0B63C460B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8112D541-FB68-4D8C-9755-ED0B63C460B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8112D541-FB68-4D8C-9755-ED0B63C460B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8112D541-FB68-4D8C-9755-ED0B63C460B3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2075A0D2-C055-408E-B590-52F7C66E4FFD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2075A0D2-C055-408E-B590-52F7C66E4FFD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2075A0D2-C055-408E-B590-52F7C66E4FFD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2075A0D2-C055-408E-B590-52F7C66E4FFD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

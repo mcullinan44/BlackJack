@@ -40,7 +40,6 @@ namespace Blackjack.Core.Entities
             OnDealerBlackjack?.Invoke(this, args);
         }
 
-
         public override bool CheckIsBust()
         {
             if (CurrentScore <= 21) return false;

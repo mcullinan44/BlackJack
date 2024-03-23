@@ -47,14 +47,9 @@ namespace Blackjack.Core
 
         #region Methods
 
-        public void AddPlayer(string name, double bankRoll)
+        public void AddPlayer(Player player)
         {
-            Player newPlayer = new Player(1)
-            {
-                Name = name,
-                PlayerbankRoll = bankRoll
-            };
-            PlayerList.Add(newPlayer);
+            PlayerList.Add(player);
         }
 
         public void ShuffleAll()
@@ -66,22 +61,31 @@ namespace Blackjack.Core
             OnShuffle?.Invoke(this, null);
         }
 
+        public void SetPlayerActive(Player player)
+        {
+            PlayerList.Find(i => i.Name == player.Name).IsActive = true;
+        }
+
         public void ResetBoard()
         {
             foreach(Player player in PlayerList)
             {
                 player.CurrentHands.Clear();
             }
-            PlayerList[0].IsActive = true;
+            Dealer.Hand.Cards.Clear();
         }
 
-        public PlayerHand AddHandToPlayer(Player player, State state)
+        public PlayerHand AddHandToPlayer(Player player, State state, int bet)
         {
             PlayerHand result = new PlayerHand(player, this)
             {
                 State = state
             };
             player.CurrentHands.Add(result);
+
+            result.IncreaseBet(bet);
+
+
             return result;
         }
 
@@ -91,6 +95,13 @@ namespace Blackjack.Core
             {
                 GivePlayerNextCardInShoe(player.ActiveHand, false);
             }
+        }
+
+        public void AdjustPlayerBankroll(Player player, double amount)
+        {
+            player.PlayerbankRoll = player.PlayerbankRoll + amount;
+            OnBankrollChangedEventArgs args = new OnBankrollChangedEventArgs(player);
+            OnBankrollChange?.Invoke(this, args);
         }
 
         public async void DealAsync()
@@ -239,7 +250,7 @@ namespace Blackjack.Core
 
                     CalculateScore();
                     await Task.Delay(200);
-                    OnGameEnd(this, null);
+                    OnGameEnd?.Invoke(this, null);
                 }
                 else
                 {
