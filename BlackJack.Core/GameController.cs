@@ -14,6 +14,7 @@ namespace Blackjack.Core
         public event GameEvents.OnDealerCardReceived OnDealerCardReceived;
         public event GameEvents.OnShuffle OnShuffle;
         public event GameEvents.OnTakeCardForSplit OnTakeCardForSplit;
+        public event GameEvents.OnNewDeal OnNewDeal;
 
         public GameController(int numberOfDecks)
         {
@@ -72,7 +73,14 @@ namespace Blackjack.Core
             {
                 player.CurrentHands.Clear();
             }
-            Dealer.Hand.Cards.Clear();
+
+            Dealer.Hand?.Cards.Clear();
+        }
+
+        public DealerHand AddDealerHandToDealer()
+        {
+            this.Dealer.Hand = new DealerHand(this);
+            return this.Dealer.Hand;
         }
 
         public PlayerHand AddHandToPlayer(Player player, State state, int bet)
@@ -104,8 +112,9 @@ namespace Blackjack.Core
             OnBankrollChange?.Invoke(this, args);
         }
 
-        public async void DealAsync()
+        public async Task DealAsync()
         {
+            OnNewDeal?.Invoke(this, EventArgs.Empty);
             bool dealerBlackJack = false;
 
             await Task.Delay(500);
@@ -240,7 +249,7 @@ namespace Blackjack.Core
                 else if (nextPlayer == null)
                 {
                     await Task.Delay(200);
-                    OnShowAllCards(this, null);
+                    OnShowAllCards?.Invoke(this, null);
 
                     while (!Dealer.Hand.CheckIsBust() && Dealer.Hand.CurrentScore <= 16)
                     {

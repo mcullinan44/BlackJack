@@ -4,39 +4,39 @@
 
 
 <div>
-    
-  
-        @foreach (Card card in this._hand.Cards)
-        {
-            <span>
-                @if (card.CardType == CardType.Numeric)
-                {
-                    @card.Value
-                }
-                else if (card.CardType == CardType.Jack)
-                {
-                    @("J")
-                }
-                else if (card.CardType == CardType.Queen)
-                {
-                    @("Q")
-                }
-                else if (card.CardType == CardType.King)
-                {
-                    @("K")
-                }
-                else
-                {
-                    @("A")
-                }
-                @card.CardSuit.ToString();
 
-            </span>
-        }
-        <br/>
-        Current Score: @this._hand.CurrentScore;
-    
-    
+
+    @foreach (Card card in this.DealerHand.Cards)
+    {
+        <span>
+            @if (card.CardType == CardType.Numeric)
+            {
+                @card.Value
+            }
+            else if (card.CardType == CardType.Jack)
+            {
+                @("J")
+            }
+            else if (card.CardType == CardType.Queen)
+            {
+                @("Q")
+            }
+            else if (card.CardType == CardType.King)
+            {
+                @("K")
+            }
+            else
+            {
+                @("A")
+            }
+            @card.CardSuit.ToString();
+
+        </span>
+    }
+    <br/>
+     Score: @this.DealerHand.CurrentScore;
+
+
     <div>
         @_resultMessage
     </div>
@@ -46,28 +46,40 @@
 
 @code {
 
-    [Parameter] 
+    [Parameter]
     public GameController GameController { get; set; }
 
-
-    private  DealerHand _hand;
+    [Parameter]
+    public DealerHand DealerHand { get; set; }
 
     private string _resultMessage;
 
     protected override Task OnInitializedAsync()
     {
-        _hand = new DealerHand(GameController);
 
-        _hand.OnDealerBust += dealer_onBust;
-        _hand.OnDealerBlackjack += dealer_onBlackjack;
-        _hand.OnDealerWinHand += hand_onWinHand;
-        _hand.OnDealerLoseHand += hand_onLoseHand;
-        _hand.OnPushHand += hand_onPushHand;
+
+        DealerHand.OnDealerBust += dealer_onBust;
+        DealerHand.OnDealerBlackjack += dealer_onBlackjack;
+        DealerHand.OnDealerWinHand += hand_onWinHand;
+        DealerHand.OnDealerLoseHand += hand_onLoseHand;
+        DealerHand.OnPushHand += hand_onPushHand;
         GameController.OnDealerCardReceived += dealer_onCardReceived;
+        GameController.OnGameEnd += GameControllerOnOnGameEnd;
+        GameController.OnNewDeal += GameControllerOnOnNewDeal;
+        
 
         return base.OnInitializedAsync();
     }
 
+    private void GameControllerOnOnNewDeal(object sender, EventArgs e)
+    {
+        this._resultMessage = string.Empty;
+    }
+
+    private void GameControllerOnOnGameEnd(object sender, EventArgs e)
+    {
+        StateHasChanged();
+    }
 
     private void hand_onPushHand(Hand hand)
     {
@@ -79,28 +91,28 @@
     {
         _resultMessage = "Dealer loses with " + hand.CurrentScore.ToString();
         StateHasChanged();
-        
+
     }
 
     private void hand_onWinHand(Hand hand)
     {
         _resultMessage = "Dealer wins with " + hand.CurrentScore.ToString();
         StateHasChanged();
-        
+
     }
 
     private void dealer_onBust(object sender, OnCardReceivedEventArgs args)
     {
         _resultMessage = "Bust with " + args.Hand.CurrentScore;
         StateHasChanged();
-        
+
     }
 
     private void dealer_onBlackjack(object sender, OnCardReceivedEventArgs args)
     {
         _resultMessage = "DEALER BLACKJACK";
         StateHasChanged();
-        
+
     }
 
     private void dealer_onCardReceived(object sender, OnCardReceivedEventArgs args)

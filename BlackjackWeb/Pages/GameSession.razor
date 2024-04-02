@@ -5,8 +5,11 @@
 <br />
 <br />
 <div>
-    Dealer Hand:
-    <DealerHandControl GameController="Controller"></DealerHandControl>
+    @if(_ready)
+    {
+        <DealerHandControl @ref="_dealerHandControl" GameController="Controller" DealerHand="_dealerHand"></DealerHandControl>
+    }
+  
 </div>
 |-------------------------------------------------------------------------------------------------------------|
 <br />
@@ -21,16 +24,20 @@
     <div>Current Bet: @_totalBet.ToString("c0")</div>
     @if (_ready)
     {
-        <PlayerHandControl @ref="_playerHandControl" GameController="Controller" Player="Player" PlayerHand="_playerHand" Bet="_totalBet"></PlayerHandControl>
+        <PlayerHandControl @key="_playerHandId" GameController="Controller" PlayerHand="_playerHand" Bet="_totalBet"></PlayerHandControl>
     }
     <br />
     <br />
     <br />
     <br />
     <div>
-        Bet Amount: <input type="text" @bind="@_betIncrement" /> <button @onclick="IncreaseBet">IncreaseBet</button>
-        <br/>saw
-        <button @onclick="Deal">Deal</button>
+        Bet Amount: <input type="text" @bind="@_betIncrement" /> <button @onclick="IncreaseBet">Bet</button>
+        <br/>
+        
+        @if (_isBetValid)
+        {
+            <button @onclick="Deal">Deal</button>
+        }
     </div>
 
     Bankroll: $<p>@_bankroll</p>
@@ -45,8 +52,15 @@
 
     private PlayerHand _playerHand;
 
+    private DealerHand _dealerHand;
+
     private PlayerHandControl _playerHandControl;
 
+    private DealerHandControl _dealerHandControl;
+
+    private string _playerHandId;
+
+    private bool _isBetValid = false;
     private int _betIncrement;
     private int _totalBet;
 
@@ -54,11 +68,13 @@
 
     private bool _ready;
 
+
     protected override Task OnInitializedAsync()
     {
+        _playerHandId = Guid.NewGuid().ToString();
         Controller.OnBankrollChange += ControllerOnOnBankrollChange;
-        Controller.OnShowAllCards += ControllerOnOnShowAllCards;
         Controller.OnGameEnd += ControllerOnOnGameEnd;
+        Controller.OnShowAllCards += ControllerOnOnShowAllCards;
         Controller.MinimumBet = Defaults.MINIMUM_BET;
         Controller.ShuffleAll();
         _betIncrement = Controller.MinimumBet;
@@ -66,17 +82,18 @@
         return base.OnInitializedAsync(); 
     }
 
-    private void ControllerOnOnGameEnd(object sender, EventArgs e)
-    {
-        _playerHandControl = null;
-        _totalBet = 0;
-        StateHasChanged();
-    }
-
     private void ControllerOnOnShowAllCards(object sender, EventArgs e)
     {
 
     }
+
+    private void ControllerOnOnGameEnd(object sender, EventArgs e)
+    {
+        _totalBet = 0;
+        _isBetValid = false;
+        StateHasChanged();
+    }
+
 
     private void ControllerOnOnBankrollChange(object sender, OnBankrollChangedEventArgs e)
     {
@@ -85,18 +102,12 @@
     }
 
 
-    private void Instance_OnShowAllCards(object sender, EventArgs e)
-    {
-        StateHasChanged();
-    }
-
     private void IncreaseBet(MouseEventArgs obj)
     {
         _totalBet += _betIncrement;
+        _isBetValid = true;
         Controller.AdjustPlayerBankroll(Player, -_betIncrement);
-
         StateHasChanged();
-
     }
 
     public void SplitHand()
@@ -118,24 +129,14 @@
     }
 
 
-    private void HandOnOnDealerBust(object sender, OnCardReceivedEventArgs args)
+    private async Task Deal()
     {
-
-    }
-
-    private void HandOnOnDealerBlackjack(object sender, OnCardReceivedEventArgs args)
-    {
-
-    }
-
-    private void Deal()
-    {
-
+        _ready = false;
         Player.IsActive = true;
         _playerHand = Controller.AddHandToPlayer(Player, State.Playing, _totalBet);
-        Controller.Dealer.Hand.OnDealerBlackjack += HandOnOnDealerBlackjack;
-        Controller.Dealer.Hand.OnDealerBust += HandOnOnDealerBust;
-        Controller.DealAsync();
+        _dealerHand = Controller.AddDealerHandToDealer();
         _ready = true;
+        _playerHandId = Guid.NewGuid().ToString();
+        await Controller.DealAsync();
     }
 }

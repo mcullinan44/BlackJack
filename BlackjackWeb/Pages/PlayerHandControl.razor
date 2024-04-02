@@ -6,14 +6,12 @@
 @using System.Net.Mime
 @using System.Diagnostics.Eventing.Reader
 
-<p>@this.Player.Name</p>
 <div>
     Bet: <label>@Bet.ToString("c0")</label>
 </div>
 
 @*Hand*@
 <div>
-    Hand:
     @foreach (Card card in this.PlayerHand.Cards)
     {
         <span>
@@ -42,7 +40,7 @@
         </span>
     }
     <br/>
-    Current Score: @this.PlayerHand.CurrentScore;
+     Score: @this.PlayerHand.CurrentScore;
 </div>
 
 
@@ -85,8 +83,7 @@
 </div>
 @code {
 
-    [Parameter]
-    public Player Player { get; set; }
+  
 
     [Parameter]
     public PlayerHand PlayerHand { get; set; }
@@ -126,8 +123,10 @@
         PlayerHand.OnActivate +=    PlayerHandOnOnActivate;
         PlayerHand.OnTakeCardForSplit +=  PlayerHandOnOnTakeCardForSplit;
         GameController.OnGameEnd += GameControllerOnOnGameEnd;
+ 
         return base.OnInitializedAsync();
     }
+
 
     private void GameControllerOnOnGameEnd(object sender, EventArgs e)
     {
@@ -264,6 +263,4 @@
             }
         }
     }
-
-    
 }
