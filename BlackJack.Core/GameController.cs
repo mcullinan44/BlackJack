@@ -73,7 +73,6 @@ namespace Blackjack.Core
             {
                 player.CurrentHands.Clear();
             }
-
             Dealer.Hand?.Cards.Clear();
         }
 
@@ -85,15 +84,12 @@ namespace Blackjack.Core
 
         public PlayerHand AddHandToPlayer(Player player, State state, int bet)
         {
-            PlayerHand result = new PlayerHand(player, this)
+            PlayerHand result = new(player, this)
             {
                 State = state
             };
             player.CurrentHands.Add(result);
-
             result.IncreaseBet(bet);
-
-
             return result;
         }
 
