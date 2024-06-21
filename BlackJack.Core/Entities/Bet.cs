@@ -9,6 +9,6 @@
 
         public PlayerHand Hand { get; set; }
 
-        public double Amount { get; set; } = 0;
+        public int Amount { get; set; } = 0;
     }
 }

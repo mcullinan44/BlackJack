@@ -28,11 +28,12 @@ What is your name? <input type="text" @bind=_player.Name/>
     private void StartNewGame()
     {
         _controller = new GameController(4);
-        
         _controller.AddPlayer(_player);
         _player.PlayerbankRoll = 1000;
         _controller.SetPlayerActive(_player);
         _controller.ResetBoard();
         _ready = true;
+
+        Console.WriteLine("NewGame");
     }
 }

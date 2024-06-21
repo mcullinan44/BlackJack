@@ -175,6 +175,7 @@ namespace Blackjack.Core
 
         private void AdjustPlayerBankRoll(Player player, double amount)
         {
+            Console.WriteLine("AdjustPlayerBankRoll");
             player.PlayerbankRoll += amount;
             OnBankrollChangedEventArgs args = new OnBankrollChangedEventArgs(player);
             OnBankrollChange?.Invoke(this, args);
@@ -182,6 +183,7 @@ namespace Blackjack.Core
 
         public void GivePlayerNextCardInShoe(PlayerHand playerHand, bool checkBlackJackImmediately)
         {
+            Console.WriteLine("GivePlayerNextCardInShoe");
             Card card = Shoe.NextCard;
 
             playerHand.AddCard(card);
@@ -214,7 +216,7 @@ namespace Blackjack.Core
             OnDealerCardReceived?.Invoke(this, args);
         }
 
-        public void IncreaseBet(PlayerHand hand, double amountToIncrease)
+        public void IncreaseBet(PlayerHand hand, int amountToIncrease)
         {
             hand.IncreaseBet(amountToIncrease);
             hand.Player.PlayerbankRoll -= amountToIncrease;
@@ -224,6 +226,7 @@ namespace Blackjack.Core
 
         public async void FinishHand(Player player)
         {
+            Console.WriteLine("BEING Finish Hand");
             PlayerHand nextHand = player.CurrentHands.FirstOrDefault(i => i.State == State.NotYetPlayed);
             //move to the next player if there are no more unresolved hands.
             if (nextHand == null)
@@ -269,6 +272,8 @@ namespace Blackjack.Core
                 
                 nextHand.State = State.Playing;
             }
+
+            Console.WriteLine("END Finish Hand");
         }
 
         #endregion
@@ -277,6 +282,7 @@ namespace Blackjack.Core
 
         private void CalculateScore()
         {
+            Console.WriteLine("BEGIN Calculate Score");
             //check if dealer has blackJack
             int dealerScore = Dealer.Hand.CurrentScore;
             foreach(var player in PlayerList)
@@ -285,15 +291,16 @@ namespace Blackjack.Core
                 {
                     if (i.State == State.Stand || i.State == State.Doubled)
                     {
-                        if (i.CurrentScore > dealerScore || Dealer.Hand.CheckIsBust())
+                        bool isDealerBust = Dealer.Hand.CheckIsBust();
+                        if (i.CurrentScore > dealerScore || isDealerBust)
                         {
                             AdjustPlayerBankRoll(player, i.CurrentBet.Amount * 2);
                             i.Win();
 
                             //TODO: fix, this raises a second event.
-                            if(Dealer.Hand.CheckIsBust())
+                            if(isDealerBust)
                             {
-                                
+                                return;
                             }
                             else
                             {
@@ -316,7 +323,9 @@ namespace Blackjack.Core
                         }
                     }
                 }
-            } 
+            }
+
+            Console.WriteLine("END Calculate Score");
         }
         #endregion
     }

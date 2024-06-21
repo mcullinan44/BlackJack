@@ -60,67 +60,84 @@
 
         DealerHand.OnDealerBust += dealer_onBust;
         DealerHand.OnDealerBlackjack += dealer_onBlackjack;
-        DealerHand.OnDealerWinHand += hand_onWinHand;
-        DealerHand.OnDealerLoseHand += hand_onLoseHand;
-        DealerHand.OnPushHand += hand_onPushHand;
+        DealerHand.OnDealerWinHand += dealer_onWinHand;
+        DealerHand.OnDealerLoseHand += dealer_onLoseHand;
+        DealerHand.OnPushHand += dealer_onPushHand;
         GameController.OnDealerCardReceived += dealer_onCardReceived;
         GameController.OnGameEnd += GameControllerOnOnGameEnd;
         GameController.OnNewDeal += GameControllerOnOnNewDeal;
         
-
+        StateHasChanged();
         return base.OnInitializedAsync();
     }
 
     private void GameControllerOnOnNewDeal(object sender, EventArgs e)
     {
+        Console.WriteLine("GameControllerOnOnNewDeal");
         this._resultMessage = string.Empty;
+        StateHasChanged();
     }
 
     private void GameControllerOnOnGameEnd(object sender, EventArgs e)
     {
+        Console.WriteLine("GameControllerOnOnGameEnd");
         StateHasChanged();
     }
 
-    private void hand_onPushHand(Hand hand)
+    private void dealer_onPushHand(Hand hand)
     {
+        Console.WriteLine("dealer_onPushHand");
         _resultMessage = "Push";
         StateHasChanged();
+
+
+        
+
     }
 
-    private void hand_onLoseHand(Hand hand)
+    private void dealer_onLoseHand(Hand hand)
     {
+        Console.WriteLine("dealer_onLoseHand");
         _resultMessage = "Dealer loses with " + hand.CurrentScore.ToString();
+
         StateHasChanged();
+     
 
     }
 
-    private void hand_onWinHand(Hand hand)
+    private void dealer_onWinHand(Hand hand)
     {
+        Console.WriteLine("hand_onWinHand");
         _resultMessage = "Dealer wins with " + hand.CurrentScore.ToString();
+   
         StateHasChanged();
+        
 
     }
 
     private void dealer_onBust(object sender, OnCardReceivedEventArgs args)
     {
+        Console.WriteLine("dealer_onBust");
         _resultMessage = "Bust with " + args.Hand.CurrentScore;
         StateHasChanged();
+
 
     }
 
     private void dealer_onBlackjack(object sender, OnCardReceivedEventArgs args)
     {
+        Console.WriteLine("dealer_onBlackjack");
         _resultMessage = "DEALER BLACKJACK";
         StateHasChanged();
+
 
     }
 
     private void dealer_onCardReceived(object sender, OnCardReceivedEventArgs args)
     {
-
-
+        Console.WriteLine("dealer_onCardReceived");
         StateHasChanged();
-
+ 
 
     }
 }

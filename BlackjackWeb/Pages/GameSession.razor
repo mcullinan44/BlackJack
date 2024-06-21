@@ -21,11 +21,8 @@
 <br />
 
 <div>
-    <div>Current Bet: @_totalBet.ToString("c0")</div>
-    @if (_ready)
-    {
-        <PlayerHandControl @key="_playerHandId" GameController="Controller" PlayerHand="_playerHand" Bet="_totalBet"></PlayerHandControl>
-    }
+    <div>Total Bet: @_totalBet.ToString("c0")</div>
+    <DynamicComponent Type="typeof(PlayerHandControl)" @ref="_dynamicPlayerHandControl" Parameters="_playerHandParameterDictionary"> </DynamicComponent>
     <br />
     <br />
     <br />
@@ -54,7 +51,7 @@
 
     private DealerHand _dealerHand;
 
-    private PlayerHandControl _playerHandControl;
+    private DynamicComponent _dynamicPlayerHandControl;
 
     private DealerHandControl _dealerHandControl;
 
@@ -69,9 +66,12 @@
     private bool _ready;
 
 
+    private IDictionary<string, object> _playerHandParameterDictionary = new Dictionary<string, object>();
+
+
     protected override Task OnInitializedAsync()
     {
-        _playerHandId = Guid.NewGuid().ToString();
+        Console.WriteLine("Initialized Gamesession");
         Controller.OnBankrollChange += ControllerOnOnBankrollChange;
         Controller.OnGameEnd += ControllerOnOnGameEnd;
         Controller.OnShowAllCards += ControllerOnOnShowAllCards;
@@ -79,6 +79,7 @@
         Controller.ShuffleAll();
         _betIncrement = Controller.MinimumBet;
         _bankroll = "1000";
+
         return base.OnInitializedAsync(); 
     }
 
@@ -89,25 +90,33 @@
 
     private void ControllerOnOnGameEnd(object sender, EventArgs e)
     {
+        Console.WriteLine("ControllerOnOnGameEnd");
         _totalBet = 0;
         _isBetValid = false;
         StateHasChanged();
+
+        
     }
 
 
     private void ControllerOnOnBankrollChange(object sender, OnBankrollChangedEventArgs e)
     {
+        Console.WriteLine("ControllerOnOnBankrollChange");
         _bankroll = e.Player.PlayerbankRoll.ToString("c0");
         StateHasChanged();
+     
     }
 
 
     private void IncreaseBet(MouseEventArgs obj)
     {
+        Console.WriteLine("IncreaseBet");
         _totalBet += _betIncrement;
         _isBetValid = true;
         Controller.AdjustPlayerBankroll(Player, -_betIncrement);
         StateHasChanged();
+    
+        
     }
 
     public void SplitHand()
@@ -131,12 +140,15 @@
 
     private async Task Deal()
     {
-        _ready = false;
+        Console.WriteLine("Deal Start");
         Player.IsActive = true;
         _playerHand = Controller.AddHandToPlayer(Player, State.Playing, _totalBet);
         _dealerHand = Controller.AddDealerHandToDealer();
-        _ready = true;
-        _playerHandId = Guid.NewGuid().ToString();
+        ((PlayerHandControl)_dynamicPlayerHandControl.Instance).Initialize(_playerHand, _totalBet, Controller);
+
         await Controller.DealAsync();
+        _ready = true;
+        Console.WriteLine("Deal End");
+        StateHasChanged();
     }
 }
