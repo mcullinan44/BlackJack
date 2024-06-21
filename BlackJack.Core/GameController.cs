@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http.Headers;
-using BlackJack.Core;
+﻿using BlackJack.Core;
 using Blackjack.Core.Entities;
 
 namespace Blackjack.Core
@@ -169,6 +166,10 @@ namespace Blackjack.Core
             bool moreToPlay = PlayerList.Any(i => i.CurrentHands.Any(x => x.Result == Result.Undetermined));
             if(!moreToPlay)
             {
+                foreach (Player player in PlayerList)
+                {
+                    player.CurrentHands.Clear();
+                }
                 OnGameEnd?.Invoke(this, null);
             }
         }
@@ -184,7 +185,16 @@ namespace Blackjack.Core
         public void GivePlayerNextCardInShoe(PlayerHand playerHand, bool checkBlackJackImmediately)
         {
             Console.WriteLine("GivePlayerNextCardInShoe");
-            Card card = Shoe.NextCard;
+            //Card card = Shoe.NextCard;
+            Card card;
+            if (playerHand.Cards.Exists(i => i.CardType == CardType.Ace))
+            {
+                 card = Shoe.GetNextTen;
+            }
+            else
+            {
+                 card = Shoe.GetNextAce;
+            }
 
             playerHand.AddCard(card);
 
@@ -211,6 +221,19 @@ namespace Blackjack.Core
         private async void GiveDealerACardAsync()
         {
             Card card = this.Shoe.NextCard;
+
+
+            //Card card;
+            //if (Dealer.Hand.Cards.Exists(i => i.CardType == CardType.Ace))
+            //{
+            //    card = Shoe.GetNextTen;
+            //}
+            //else
+            //{
+            //    card = Shoe.GetNextAce;
+            //}
+
+
             Dealer.Hand.Cards.Add(card);
             OnCardReceivedEventArgs args = new OnCardReceivedEventArgs(Dealer.Hand, card);
             OnDealerCardReceived?.Invoke(this, args);
@@ -226,39 +249,36 @@ namespace Blackjack.Core
 
         public async void FinishHand(Player player)
         {
-            Console.WriteLine("BEING Finish Hand");
             PlayerHand nextHand = player.CurrentHands.FirstOrDefault(i => i.State == State.NotYetPlayed);
             //move to the next player if there are no more unresolved hands.
             if (nextHand == null)
             {
                 player.IsActive = false;
-                
                 //if there are hands that have not busted or blackjacked
                 Player nextPlayer = PlayerList.FirstOrDefault(i => i.CurrentHands.Any(x => x.State == State.NotYetPlayed ));
                 bool everythingIsbusted = !PlayerList.Any(i => i.CurrentHands.Any(x => x.Result != Result.Bust));
-
-
                 //If all hands have busted, end the game and don't play for the dealer
                 if (everythingIsbusted)
                 {
                     //do nothing
                     await Task.Delay(300);
                     OnGameEnd?.Invoke(this, null);
+                    player.CurrentHands.Clear();
+                    
                 }
                 else if (nextPlayer == null)
                 {
                     await Task.Delay(200);
                     OnShowAllCards?.Invoke(this, null);
-
                     while (!Dealer.Hand.CheckIsBust() && Dealer.Hand.CurrentScore <= 16)
                     {
                         await Task.Delay(500);
                         GiveDealerACardAsync();
                     }
-
                     CalculateScore();
                     await Task.Delay(200);
                     OnGameEnd?.Invoke(this, null);
+                    player.CurrentHands.Clear();
                 }
                 else
                 {
@@ -272,8 +292,6 @@ namespace Blackjack.Core
                 
                 nextHand.State = State.Playing;
             }
-
-            Console.WriteLine("END Finish Hand");
         }
 
         #endregion
@@ -282,7 +300,6 @@ namespace Blackjack.Core
 
         private void CalculateScore()
         {
-            Console.WriteLine("BEGIN Calculate Score");
             //check if dealer has blackJack
             int dealerScore = Dealer.Hand.CurrentScore;
             foreach(var player in PlayerList)
@@ -304,9 +321,7 @@ namespace Blackjack.Core
                             }
                             else
                             {
-
                                 Dealer.Hand.Lost();
-                                
                             }
                             
                         }
@@ -324,8 +339,6 @@ namespace Blackjack.Core
                     }
                 }
             }
-
-            Console.WriteLine("END Calculate Score");
         }
         #endregion
     }

@@ -84,6 +84,66 @@ namespace Blackjack.Core.Entities
             return topCard;
         }
 
+        public Card GetNextAce
+        {
+            get
+            {
+                Card topCard = null;
+                bool isFound = false;
+                foreach (Deck deck in _deckList)
+                {
+             
+                    foreach (var card in deck.CardList)
+                    {
+                        if (!card.IsDealt && card.CardType == CardType.Ace)
+                        {
+                            topCard = card;
+                            topCard.IsDealt = true;
+                            isFound = true;
+                            break;
+                        }
+                    }
+                    if (isFound)
+                        break;
+                }
+
+                if (topCard == null)
+                    throw new ArgumentNullException("the card is null", "the card is null");
+                return topCard;
+            }
+        }
+
+
+        public Card GetNextTen
+        {
+            get
+            {
+                Card topCard = null;
+                bool isFound = false;
+                foreach (Deck deck in _deckList)
+                {
+             
+                    foreach (var card in deck.CardList)
+                    {
+                        if (!card.IsDealt && card.Value == 10)
+                        {
+                            topCard = card;
+                            topCard.IsDealt = true;
+                            isFound = true;
+                            break;
+                        }
+                    }
+                    if (isFound)
+                        break;
+                }
+
+                if (topCard == null)
+                    throw new ArgumentNullException("the card is null", "the card is null");
+                return topCard;
+            }
+        }
+
+
         public Card NextCard
         {
             get
@@ -92,8 +152,7 @@ namespace Blackjack.Core.Entities
                 bool isFound = false;
                 foreach (Deck deck in _deckList)
                 {
-                    if (isFound)
-                        break;
+             
                     foreach (var card in deck.CardList)
                     {
                         if (!card.IsDealt)
@@ -104,6 +163,8 @@ namespace Blackjack.Core.Entities
                             break;
                         }
                     }
+                    if (isFound)
+                        break;
                 }
 
                 if (topCard == null)

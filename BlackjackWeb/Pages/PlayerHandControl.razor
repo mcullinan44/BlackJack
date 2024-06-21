@@ -12,8 +12,6 @@
     <div>
         Hand Bet: <label>@_bet.ToString("c0")</label>
     </div>
-
-@*Hand*@
     <div>
         @foreach (Card card in this._playerHand.Cards)
         {
@@ -47,7 +45,6 @@
     </div>
 
 
-@*Buttons*@
     <div>
 
         @if (_hittable)
@@ -103,9 +100,9 @@
 
     private bool _hasblackjack;
 
-    private bool _isplaying;
 
-    private bool _dataLoaded = false;
+
+    private bool _dataLoaded;
 
 
     private PlayerHand _playerHand;
@@ -116,11 +113,9 @@
 
     public void Initialize(PlayerHand playerHand, int bet, GameController controller)
     {
-        Console.WriteLine("DoStuff");
         this._playerHand = playerHand;
         this._bet = bet;
         this._gameController = controller;
-
 
         _playerHand.OnBetChanged +=  PlayerHandOnOnBetChanged;
         _playerHand.OnCardReceived += PlayerHandOnOnCardReceived;
@@ -132,9 +127,7 @@
         _playerHand.OnActivate += PlayerHandOnOnActivate;
         _playerHand.OnTakeCardForSplit += PlayerHandOnOnTakeCardForSplit;
         _gameController.OnGameEnd += GameControllerOnOnGameEnd;
-   
         _dataLoaded = true;
-
         _resultMessage = string.Empty;
         StateHasChanged();
     }
@@ -142,18 +135,6 @@
     private void GameControllerOnOnGameEnd(object sender, EventArgs e)
     {
         _doubleable = _hittable = _standable = _splitable = false;
-
-
-        _playerHand.OnBetChanged -=  PlayerHandOnOnBetChanged;
-        _playerHand.OnCardReceived -= PlayerHandOnOnCardReceived;
-        _playerHand.OnBust -= PlayerHandOnOnBust;
-        _playerHand.OnBlackjack -= PlayerHandOnOnBlackjack;
-        _playerHand.OnWinHand -= PlayerHandOnOnWinHand;
-        _playerHand.OnLoseHand -= PlayerHandOnOnLoseHand;
-        _playerHand.OnPushHand -= PlayerHandOnOnPushHand;
-        _playerHand.OnActivate -= PlayerHandOnOnActivate;
-        _playerHand.OnTakeCardForSplit -= PlayerHandOnOnTakeCardForSplit;
-  
         StateHasChanged();
     }
 
@@ -165,24 +146,19 @@
 
     private void PlayerHandOnOnActivate(object sender, EventArgs e)
     {
-        Console.WriteLine("PlayerHandOnOnActivate");
         ActivateButtons();
         StateHasChanged();
     }
 
     private void PlayerHandOnOnPushHand(Hand hand)
     {
-        Console.WriteLine("PlayerHandOnOnPushHand");
         _resultMessage = "Push with " + hand.CurrentScore;
-        _isplaying = false;
         StateHasChanged();
     }
 
     private void PlayerHandOnOnLoseHand(Hand hand)
     {
-        Console.WriteLine("PlayerHandOnOnLoseHand");
         _resultMessage = "Hand loses " + ((PlayerHand)hand).CurrentBet.Amount.ToString("c0") + " with score of " + hand.CurrentScore;
-        _isplaying = false;
         StateHasChanged();
    
     }
@@ -190,33 +166,24 @@
     private void PlayerHandOnOnWinHand(Hand hand)
     {
         _resultMessage = "Hand wins " + ((PlayerHand)hand).CurrentBet.Amount.ToString("c0") + " with score of " + hand.CurrentScore + ". Dealer has " + _gameController.Dealer.Hand.CurrentScore;
-        _isplaying = false;
-        Console.WriteLine("PlayerHandOnOnWinHand");
         StateHasChanged();
     }
 
     private void PlayerHandOnOnBlackjack(object sender, OnCardReceivedEventArgs args)
     {
-        Console.WriteLine("PlayerHandOnOnBlackjack");
         _resultMessage = "BLACKJACK!!!! You win " + (_playerHand.CurrentBet.Amount * 1.5).ToString("c0");
-        _isplaying = false;
         StateHasChanged();
-
-        
     }
 
     private void PlayerHandOnOnBust(object sender, OnCardReceivedEventArgs args)
     {
-        Console.WriteLine("PlayerHandOnOnBust");
         _resultMessage = "YOU BUST!! " + args.Hand.CurrentScore + ". " + "Lost " + ((PlayerHand)args.Hand).CurrentBet.Amount.ToString("c0");
-        _isplaying = false;
         StateHasChanged();
         
     }
 
     private void PlayerHandOnOnCardReceived(object sender, OnCardReceivedEventArgs args)
     {
-        Console.WriteLine("PlayerHandOnOnCardReceived");
         if(_playerHand.State == State.Playing)
         {
             ActivateButtons();
@@ -226,7 +193,6 @@
 
     private void PlayerHandOnOnBetChanged(object sender, OnBetChangedEventArgs args)
     {
-        Console.WriteLine("PlayerHandOnOnBetChanged");
         _bet = args.Bet.Amount;
         StateHasChanged();
         
@@ -234,7 +200,6 @@
 
     private void OnHit(MouseEventArgs obj)
     {
-        Console.WriteLine("OnHit");
         _playerHand.Hit();
         StateHasChanged();
  
@@ -242,11 +207,8 @@
 
     private void OnStand(MouseEventArgs obj)
     {
-        Console.WriteLine("OnStand");
         _playerHand.Stand();
         StateHasChanged();
-        
-        
     }
 
     private void OnSplit(MouseEventArgs obj)
@@ -257,7 +219,6 @@
 
     private void OnDouble(MouseEventArgs obj)
     {
-        Console.WriteLine("OnDouble");
         _playerHand.DoubleDown();
         DisableButtons();
         StateHasChanged();
@@ -266,14 +227,12 @@
 
     private void DisableButtons()
     {
-        Console.WriteLine("DisableButtons");
         _hittable = _standable = _splitable = _doubleable = false;
         StateHasChanged();
     }
 
     private void ActivateButtons()
     {
-        Console.WriteLine("ActivateButtons");
         _hittable = true;
         _standable = true;
     //can't split more than two times.
@@ -301,20 +260,6 @@
 
     public void DeactivateButtons()
     {
-        Console.WriteLine("DeactivateButtons");
         _hittable = _splitable = _standable = _doubleable =  false;
-    }
-
-
-    private bool IsPlaying
-    {
-        set
-        {
-            if(!value)
-            {
-                DeactivateButtons();
-
-            }
-        }
     }
 }

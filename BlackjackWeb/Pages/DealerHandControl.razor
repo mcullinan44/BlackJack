@@ -2,10 +2,7 @@
 @using BlackJack.Core
 @using Blackjack.Core.Entities
 
-
 <div>
-
-
     @foreach (Card card in this.DealerHand.Cards)
     {
         <span>
@@ -30,13 +27,10 @@
                 @("A")
             }
             @card.CardSuit.ToString();
-
         </span>
     }
     <br/>
      Score: @this.DealerHand.CurrentScore;
-
-
     <div>
         @_resultMessage
     </div>
@@ -52,12 +46,10 @@
     [Parameter]
     public DealerHand DealerHand { get; set; }
 
-    private string _resultMessage;
+    private string? _resultMessage;
 
     protected override Task OnInitializedAsync()
     {
-
-
         DealerHand.OnDealerBust += dealer_onBust;
         DealerHand.OnDealerBlackjack += dealer_onBlackjack;
         DealerHand.OnDealerWinHand += dealer_onWinHand;
@@ -73,71 +65,47 @@
 
     private void GameControllerOnOnNewDeal(object sender, EventArgs e)
     {
-        Console.WriteLine("GameControllerOnOnNewDeal");
         this._resultMessage = string.Empty;
         StateHasChanged();
     }
 
     private void GameControllerOnOnGameEnd(object sender, EventArgs e)
     {
-        Console.WriteLine("GameControllerOnOnGameEnd");
         StateHasChanged();
     }
 
     private void dealer_onPushHand(Hand hand)
     {
-        Console.WriteLine("dealer_onPushHand");
         _resultMessage = "Push";
         StateHasChanged();
-
-
-        
-
     }
 
     private void dealer_onLoseHand(Hand hand)
     {
-        Console.WriteLine("dealer_onLoseHand");
         _resultMessage = "Dealer loses with " + hand.CurrentScore.ToString();
-
         StateHasChanged();
-     
-
     }
 
     private void dealer_onWinHand(Hand hand)
     {
-        Console.WriteLine("hand_onWinHand");
         _resultMessage = "Dealer wins with " + hand.CurrentScore.ToString();
-   
         StateHasChanged();
-        
-
     }
 
     private void dealer_onBust(object sender, OnCardReceivedEventArgs args)
     {
-        Console.WriteLine("dealer_onBust");
         _resultMessage = "Bust with " + args.Hand.CurrentScore;
         StateHasChanged();
-
-
     }
 
     private void dealer_onBlackjack(object sender, OnCardReceivedEventArgs args)
     {
-        Console.WriteLine("dealer_onBlackjack");
         _resultMessage = "DEALER BLACKJACK";
         StateHasChanged();
-
-
     }
 
     private void dealer_onCardReceived(object sender, OnCardReceivedEventArgs args)
     {
-        Console.WriteLine("dealer_onCardReceived");
         StateHasChanged();
- 
-
     }
 }
