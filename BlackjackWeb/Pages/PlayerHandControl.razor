@@ -1,17 +1,11 @@
 ﻿@using Blackjack.Core
 @using BlackJack.Core
 @using Blackjack.Core.Entities
-@using Microsoft.AspNetCore.DataProtection.XmlEncryption
-@using System.Xml
-@using System.Net.Mime
-@using System.Diagnostics.Eventing.Reader
+@implements IDisposable
 
 
-@if (_dataLoaded)
+@if (_playing)
 {
-    <div>
-        Hand Bet: <label>@_bet.ToString("c0")</label>
-    </div>
     <div>
         @foreach (Card card in this._playerHand.Cards)
         {
@@ -44,7 +38,9 @@
         Score: @this._playerHand.CurrentScore;
     </div>
 
-
+    <div>
+        Hand Bet: <label>@_bet.ToString("c0")</label>
+    </div>
     <div>
 
         @if (_hittable)
@@ -69,22 +65,16 @@
         }
     </div>
     <div>
-        <div>
-            @_resultMessage
-        </div>
 
-        @if (_winningAmount > 0)
-        {
-            <div>
 
-            </div>
-        }
 
     </div>
 }
+
+<div>
+    @_resultMessage
+</div>
 @code {
-
-
 
     private bool _hittable;
 
@@ -100,10 +90,7 @@
 
     private bool _hasblackjack;
 
-
-
-    private bool _dataLoaded;
-
+    private bool _playing;
 
     private PlayerHand _playerHand;
 
@@ -126,21 +113,30 @@
         _playerHand.OnPushHand += PlayerHandOnOnPushHand;
         _playerHand.OnActivate += PlayerHandOnOnActivate;
         _playerHand.OnTakeCardForSplit += PlayerHandOnOnTakeCardForSplit;
+        _gameController.OnNewDeal += GameControllerOnOnNewDeal;
         _gameController.OnGameEnd += GameControllerOnOnGameEnd;
-        _dataLoaded = true;
+        _playing = true;
         _resultMessage = string.Empty;
+        StateHasChanged();
+    }
+
+    private void GameControllerOnOnNewDeal(object sender, EventArgs e)
+    {
+        this._resultMessage = string.Empty;
         StateHasChanged();
     }
 
     private void GameControllerOnOnGameEnd(object sender, EventArgs e)
     {
         _doubleable = _hittable = _standable = _splitable = false;
+
+        this._playerHand.Cards.Clear();
+        _playing = false;
         StateHasChanged();
     }
 
     private void PlayerHandOnOnTakeCardForSplit(object sender, OnCardRemovedForSplitEventArgs e)
     {
-       
 
     }
 
@@ -158,14 +154,14 @@
 
     private void PlayerHandOnOnLoseHand(Hand hand)
     {
-        _resultMessage = "Hand loses " + ((PlayerHand)hand).CurrentBet.Amount.ToString("c0") + " with score of " + hand.CurrentScore;
+        _resultMessage = "Player loses " + ((PlayerHand)hand).CurrentBet.Amount.ToString("c0") + " with score of " + hand.CurrentScore;
         StateHasChanged();
-   
+
     }
 
     private void PlayerHandOnOnWinHand(Hand hand)
     {
-        _resultMessage = "Hand wins " + ((PlayerHand)hand).CurrentBet.Amount.ToString("c0") + " with score of " + hand.CurrentScore + ". Dealer has " + _gameController.Dealer.Hand.CurrentScore;
+        _resultMessage = "Player wins " + ((PlayerHand)hand).CurrentBet.Amount.ToString("c0") + " with score of " + hand.CurrentScore + ". Dealer has " + _gameController.Dealer.Hand.CurrentScore;
         StateHasChanged();
     }
 
@@ -177,9 +173,9 @@
 
     private void PlayerHandOnOnBust(object sender, OnCardReceivedEventArgs args)
     {
-        _resultMessage = "YOU BUST!! " + args.Hand.CurrentScore + ". " + "Lost " + ((PlayerHand)args.Hand).CurrentBet.Amount.ToString("c0");
+        _resultMessage = "PLAYER BUSTS with " + args.Hand.CurrentScore + ". " + "Lost " + ((PlayerHand)args.Hand).CurrentBet.Amount.ToString("c0");
         StateHasChanged();
-        
+
     }
 
     private void PlayerHandOnOnCardReceived(object sender, OnCardReceivedEventArgs args)
@@ -195,14 +191,14 @@
     {
         _bet = args.Bet.Amount;
         StateHasChanged();
-        
+
     }
 
     private void OnHit(MouseEventArgs obj)
     {
         _playerHand.Hit();
         StateHasChanged();
- 
+
     }
 
     private void OnStand(MouseEventArgs obj)
@@ -213,7 +209,6 @@
 
     private void OnSplit(MouseEventArgs obj)
     {
-     
 
     }
 
@@ -222,7 +217,6 @@
         _playerHand.DoubleDown();
         DisableButtons();
         StateHasChanged();
-
     }
 
     private void DisableButtons()
@@ -235,11 +229,11 @@
     {
         _hittable = true;
         _standable = true;
-    //can't split more than two times.
+        //can't split more than two times.
         if(_gameController.ActivePlayer.CurrentHands.Count == 3)
         {
             _splitable = false;
-            
+
         }
         if (_playerHand.Cards.Count == 2)
         {
@@ -247,7 +241,7 @@
                 && _playerHand.Cards[0].Value == _playerHand.Cards[1].Value)
             {
                 _splitable = true;
-                
+
             }
             _doubleable = true;
         }
@@ -261,5 +255,20 @@
     public void DeactivateButtons()
     {
         _hittable = _splitable = _standable = _doubleable =  false;
+    }
+
+    public void Dispose()
+    {
+        _playerHand.OnBetChanged -=  PlayerHandOnOnBetChanged;
+        _playerHand.OnCardReceived -= PlayerHandOnOnCardReceived;
+        _playerHand.OnBust -= PlayerHandOnOnBust;
+        _playerHand.OnBlackjack -= PlayerHandOnOnBlackjack;
+        _playerHand.OnWinHand -= PlayerHandOnOnWinHand;
+        _playerHand.OnLoseHand -= PlayerHandOnOnLoseHand;
+        _playerHand.OnPushHand -= PlayerHandOnOnPushHand;
+        _playerHand.OnActivate -= PlayerHandOnOnActivate;
+        _playerHand.OnTakeCardForSplit -= PlayerHandOnOnTakeCardForSplit;
+        _gameController.OnNewDeal -= GameControllerOnOnNewDeal;
+        _gameController.OnGameEnd -= GameControllerOnOnGameEnd;
     }
 }

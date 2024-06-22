@@ -3,37 +3,54 @@
 @using BlackJack.Core
 @using Blackjack.Core.Entities
 
-What is your name? <input type="text" @bind=_player.Name/>
-<br/>
-<button @onclick="StartNewGame">New Game</button>
-
-
-@if (_ready)
+@if(_newGameAvailable)
 {
-    <GameSession Controller="_controller" Player="_player"></GameSession>
+    <button @onclick="StartNewSession">Get some money and find a new table!!!</button>
 }
 
+  <DynamicComponent Type="typeof(GameSession)" @ref="_dynamicGameSession"> </DynamicComponent>    
 
 @code {
     private Player _player;
     private GameController _controller;
     private bool _ready;
-    protected override Task OnInitializedAsync()
+    private bool _newGameAvailable = true;
+    private DynamicComponent _dynamicGameSession;
+
+    private void ControllerOnOnNewDeal(object sender, EventArgs e)
     {
-        this._player = new Player(1);
-        return base.OnInitializedAsync();
+        _newGameAvailable = false;
+        StateHasChanged();
     }
 
-
-    private void StartNewGame()
+    private void ControllerOnOnGameEnd(object sender, EventArgs e)
     {
+        _newGameAvailable = true;
+        StateHasChanged();
+    }
+
+    private void StartNewSession()
+    {
+
         _controller = new GameController(4);
+        this._player = new Player(1, string.Empty);
+        _controller.OnGameEnd += ControllerOnOnGameEnd;
+        _controller.OnNewDeal += ControllerOnOnNewDeal;
+
+        if (_dynamicGameSession != null && ((GameSession)_dynamicGameSession.Instance)._controller != null)
+        {
+            ((GameSession)_dynamicGameSession.Instance).Dispose();
+        }
+
+        ((GameSession)_dynamicGameSession.Instance).Initialize(_controller, _player);
+
+        _controller.PlayerList.Clear();
         _controller.AddPlayer(_player);
+        _controller.SitDownToPlay();
         _player.PlayerbankRoll = 1000;
         _controller.SetPlayerActive(_player);
-        _controller.ResetBoard();
         _ready = true;
-
-        Console.WriteLine("NewGame");
+        _newGameAvailable = false;
+        StateHasChanged();
     }
 }

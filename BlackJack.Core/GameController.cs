@@ -8,10 +8,10 @@ namespace Blackjack.Core
         public event GameEvents.OnBankrollChange OnBankrollChange;
         public event GameEvents.OnShowAllCards OnShowAllCards;
         public event GameEvents.OnGameEnd OnGameEnd;
-        public event GameEvents.OnDealerCardReceived OnDealerCardReceived;
         public event GameEvents.OnShuffle OnShuffle;
         public event GameEvents.OnTakeCardForSplit OnTakeCardForSplit;
         public event GameEvents.OnNewDeal OnNewDeal;
+        public event GameEvents.OnSitDownToPlay OnSitDownToPlay;
 
         public GameController(int numberOfDecks)
         {
@@ -64,13 +64,15 @@ namespace Blackjack.Core
             PlayerList.Find(i => i.Name == player.Name).IsActive = true;
         }
 
-        public void ResetBoard()
+        public void SitDownToPlay()
         {
             foreach(Player player in PlayerList)
             {
                 player.CurrentHands.Clear();
             }
             Dealer.Hand?.Cards.Clear();
+
+            this.OnSitDownToPlay?.Invoke(this, null);
         }
 
         public DealerHand AddDealerHandToDealer()
@@ -137,8 +139,8 @@ namespace Blackjack.Core
                     //if both the dealer and the player have blackjack, then PUSH.
                     if(dealerBlackJack)
                     {
+                        AdjustPlayerBankRoll(player, player.ActiveHand.CurrentBet.Amount);
                         player.ActiveHand.Push();
-
                     }
                     //Otherwise, the player wins 1.5x his original bet
                     else
@@ -182,28 +184,34 @@ namespace Blackjack.Core
             OnBankrollChange?.Invoke(this, args);
         }
 
-        public void GivePlayerNextCardInShoe(PlayerHand playerHand, bool checkBlackJackImmediately)
+        public void GivePlayerNextCardInShoe(PlayerHand playerHand, bool checkBlackJackImmediately, DealType dealType = DealType.Standard)
         {
-            Console.WriteLine("GivePlayerNextCardInShoe");
-            Card card = Shoe.NextCard;
-            //Card card;
-            //if (playerHand.Cards.Exists(i => i.CardType == CardType.Ace))
-            //{
-            //     card = Shoe.GetNextTen;
-            //}
-            //else
-            //{
-            //     card = Shoe.GetNextAce;
-            //}
+            Card card;
+            switch (dealType)
+            {
+                case DealType.Standard:
+                    card = this.Shoe.NextCard;
+                    break;
+                case DealType.BlackJack when playerHand.Cards.Exists(i => i.CardType == CardType.Ace):
+                    card = Shoe.GetNextTen;
+                    break;
+                case DealType.BlackJack:
+                    card = Shoe.GetNextAce;
+                    break;
+                default:
+                    card = this.Shoe.NextCard;
+                    break;
+            }
 
             playerHand.AddCard(card);
 
             if (!checkBlackJackImmediately) return;
-            if (playerHand.State != State.Playing || playerHand.CurrentScore != 21) return;
 
+            if (playerHand.State != State.Playing || playerHand.CurrentScore != 21) return;
             //blackjack
             playerHand.Blackjack();
-            FinishHand(playerHand.Player);
+
+            PlayOutTheGame(playerHand.Player);
         }
 
         public void SeedSplitHandWithNewCard(PlayerHand playerHand)
@@ -218,27 +226,33 @@ namespace Blackjack.Core
             ActivePlayer.ActiveHand.RemoveCard(ActivePlayer.ActiveHand.Cards[1]);
         }
 
-        private async void GiveDealerACardAsync()
+        private async void GiveDealerACardAsync(DealType dealType = DealType.Standard)
         {
-            Card card = this.Shoe.NextCard;
-
-
-            //Card card;
-            //if (Dealer.Hand.Cards.Exists(i => i.CardType == CardType.Ace))
-            //{
-            //    card = Shoe.GetNextTen;
-            //}
-            //else
-            //{
-            //    card = Shoe.GetNextAce;
-            //}
-
-
-            Dealer.Hand.Cards.Add(card);
-            OnCardReceivedEventArgs args = new OnCardReceivedEventArgs(Dealer.Hand, card);
-            OnDealerCardReceived?.Invoke(this, args);
+            Card card;
+            switch (dealType)
+            {
+                case DealType.Standard:
+                    card = this.Shoe.NextCard;
+                    break;
+                case DealType.BlackJack when Dealer.Hand.Cards.Exists(i => i.CardType == CardType.Ace):
+                    card = Shoe.GetNextTen;
+                    break;
+                case DealType.BlackJack:
+                    card = Shoe.GetNextAce;
+                    break;
+                default:
+                    card = this.Shoe.NextCard;
+                    break;
+            }
+            Dealer.Hand.AddCard(card);
         }
 
+
+        public enum DealType
+        {
+            Standard = 1,
+            BlackJack = 2
+        }
         public void IncreaseBet(PlayerHand hand, int amountToIncrease)
         {
             hand.IncreaseBet(amountToIncrease);
@@ -247,15 +261,14 @@ namespace Blackjack.Core
             OnBankrollChange?.Invoke(this, args);
         }
 
-        public async void FinishHand(Player player)
+        public async void PlayOutTheGame(Player player)
         {
             PlayerHand nextHand = player.CurrentHands.FirstOrDefault(i => i.State == State.NotYetPlayed);
             //move to the next player if there are no more unresolved hands.
             if (nextHand == null)
             {
                 player.IsActive = false;
-                //if there are hands that have not busted or blackjacked
-                Player nextPlayer = PlayerList.FirstOrDefault(i => i.CurrentHands.Any(x => x.State == State.NotYetPlayed ));
+
                 bool everythingIsbusted = !PlayerList.Any(i => i.CurrentHands.Any(x => x.Result != Result.Bust));
                 //If all hands have busted, end the game and don't play for the dealer
                 if (everythingIsbusted)
@@ -266,11 +279,11 @@ namespace Blackjack.Core
                     player.CurrentHands.Clear();
                     
                 }
-                else if (nextPlayer == null)
+                else
                 {
                     await Task.Delay(200);
                     OnShowAllCards?.Invoke(this, null);
-                    while (!Dealer.Hand.CheckIsBust() && Dealer.Hand.CurrentScore <= 16)
+                    while (!Dealer.Hand.Bust() && Dealer.Hand.CurrentScore <= 16)
                     {
                         await Task.Delay(500);
                         GiveDealerACardAsync();
@@ -280,16 +293,9 @@ namespace Blackjack.Core
                     OnGameEnd?.Invoke(this, null);
                     player.CurrentHands.Clear();
                 }
-                else
-                {
-                    //move to the next player
-                    nextPlayer.IsActive = true;
-                    nextPlayer.CurrentHands[0].State = State.Playing;
-                }
             }
             else 
             {
-                
                 nextHand.State = State.Playing;
             }
         }
@@ -308,12 +314,11 @@ namespace Blackjack.Core
                 {
                     if (i.State == State.Stand || i.State == State.Doubled)
                     {
-                        bool isDealerBust = Dealer.Hand.CheckIsBust();
+                        bool isDealerBust = Dealer.Hand.Bust();
                         if (i.CurrentScore > dealerScore || isDealerBust)
                         {
                             AdjustPlayerBankRoll(player, i.CurrentBet.Amount * 2);
                             i.Win();
-
                             //TODO: fix, this raises a second event.
                             if(isDealerBust)
                             {
@@ -323,7 +328,6 @@ namespace Blackjack.Core
                             {
                                 Dealer.Hand.Lost();
                             }
-                            
                         }
                         else if (i.CurrentScore == dealerScore)
                         {

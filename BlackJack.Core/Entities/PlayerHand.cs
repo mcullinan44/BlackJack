@@ -88,7 +88,7 @@ namespace Blackjack.Core.Entities
             OnCardReceived?.Invoke(this, args);
         }
 
-        public override bool CheckIsBust()
+        public override bool Bust()
         {
             if (CurrentScore <= 21) return false;
             Result = Result.Bust;
@@ -100,9 +100,9 @@ namespace Blackjack.Core.Entities
         public void Hit()
         {
             Controller.GivePlayerNextCardInShoe(this, false);
-            if(CheckIsBust())
+            if(Bust())
             {
-                Controller.FinishHand(this.Player);
+                Controller.PlayOutTheGame(this.Player);
             }
         }
 
@@ -111,14 +111,14 @@ namespace Blackjack.Core.Entities
             State = State.Doubled;
             Controller.IncreaseBet(this, this.CurrentBet.Amount);
             Controller.GivePlayerNextCardInShoe(this, false);
-            CheckIsBust();
-            Controller.FinishHand(Player);
+            Bust();
+            Controller.PlayOutTheGame(Player);
         }
 
         public void Stand()
         {
             State = State.Stand;
-            Controller.FinishHand(this.Player);
+            Controller.PlayOutTheGame(this.Player);
         }
     }
 }

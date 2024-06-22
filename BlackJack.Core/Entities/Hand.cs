@@ -47,7 +47,7 @@ namespace Blackjack.Core.Entities
           
        }
 
-        public abstract bool CheckIsBust();
+        public abstract bool Bust();
         
         public Result Result { get; set; }
     }

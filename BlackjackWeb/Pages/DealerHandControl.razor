@@ -2,11 +2,17 @@
 @using BlackJack.Core
 @using Blackjack.Core.Entities
 
+@implements IDisposable
+
 <div>
-    @foreach (Card card in this.DealerHand.Cards)
+    
+@if (_playing)
+{
+
+    @foreach (Card card in this._dealerHand.Cards)
     {
 
-        @if (this.DealerHand.Cards.IndexOf(card) == 0 && !_showAllCards)
+        @if (this._dealerHand.Cards.IndexOf(card) == 0 && !_showAllCards)
         {
             //show nothing
         }
@@ -40,38 +46,42 @@
         }
     }
     <br/>
+
+}
+
     <div>
         @_resultMessage
     </div>
-
 </div>
 
 
 @code {
 
-    [Parameter]
-    public GameController GameController { get; set; }
-
-    [Parameter]
-    public DealerHand DealerHand { get; set; }
-
     private string? _resultMessage;
 
     private bool _showAllCards = false;
 
-    protected override Task OnInitializedAsync()
+    private DealerHand _dealerHand;
+
+    private GameController _gameController;
+
+    private bool _playing;
+
+    public void Initialize(DealerHand dealerHand,  GameController controller)
     {
-        DealerHand.OnDealerBust += dealer_onBust;
-        DealerHand.OnDealerBlackjack += dealer_onBlackjack;
-        DealerHand.OnDealerWinHand += dealer_onWinHand;
-        DealerHand.OnDealerLoseHand += dealer_onLoseHand;
-        DealerHand.OnPushHand += dealer_onPushHand;
-        GameController.OnDealerCardReceived += dealer_onCardReceived;
-        GameController.OnGameEnd += GameControllerOnOnGameEnd;
-        GameController.OnNewDeal += GameControllerOnOnNewDeal;
-        
+        this._dealerHand = dealerHand;
+        this._gameController = controller;
+        dealerHand.OnDealerBust += dealer_onBust;
+        dealerHand.OnDealerBlackjack += dealer_onBlackjack;
+        dealerHand.OnDealerWinHand += dealer_onWinHand;
+        dealerHand.OnDealerLoseHand += dealer_onLoseHand;
+        dealerHand.OnPushHand += dealer_onPushHand;
+        dealerHand.OnDealerCardReceived += dealer_onCardReceived;
+        _playing = true;
+        _gameController.OnGameEnd += GameControllerOnOnGameEnd;
+        _gameController.OnNewDeal += GameControllerOnOnNewDeal;
+
         StateHasChanged();
-        return base.OnInitializedAsync();
     }
 
     private void GameControllerOnOnNewDeal(object sender, EventArgs e)
@@ -106,12 +116,13 @@
 
     private void dealer_onBust(object sender, OnCardReceivedEventArgs args)
     {
-        _resultMessage = "Bust with " + args.Hand.CurrentScore;
+        _resultMessage = "DEALER BUSTS with " + args.Hand.CurrentScore;
         StateHasChanged();
     }
 
     private void dealer_onBlackjack(object sender, OnCardReceivedEventArgs args)
     {
+        _showAllCards = true;
         _resultMessage = "DEALER BLACKJACK";
         StateHasChanged();
     }
@@ -119,5 +130,18 @@
     private void dealer_onCardReceived(object sender, OnCardReceivedEventArgs args)
     {
         StateHasChanged();
+    }
+
+
+    public void Dispose()
+    {
+        _dealerHand.OnDealerBust += dealer_onBust;
+        _dealerHand.OnDealerBlackjack += dealer_onBlackjack;
+        _dealerHand.OnDealerWinHand += dealer_onWinHand;
+        _dealerHand.OnDealerLoseHand += dealer_onLoseHand;
+        _dealerHand.OnPushHand += dealer_onPushHand;
+        _dealerHand.OnDealerCardReceived += dealer_onCardReceived;
+        _gameController.OnNewDeal -= GameControllerOnOnNewDeal;
+        _gameController.OnGameEnd -= GameControllerOnOnGameEnd;
     }
 }

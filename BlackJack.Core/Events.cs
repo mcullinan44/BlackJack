@@ -25,6 +25,7 @@ namespace BlackJack.Core
         public delegate void OnBetChanged(object sender, OnBetChangedEventArgs args);
         public delegate void OnShuffle(object sender, EventArgs e);
         public delegate void OnNewDeal(object sender, EventArgs e);
+        public delegate void OnSitDownToPlay(object sender, EventArgs e);
     }
 
     public class OnCardRemovedForSplitEventArgs : EventArgs

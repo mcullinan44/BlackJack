@@ -1,9 +1,11 @@
 ﻿using BlackJack.Core;
+using static BlackJack.Core.GameEvents;
 
 namespace Blackjack.Core.Entities
 {
     public class DealerHand : Hand
     {
+        public event GameEvents.OnDealerCardReceived OnDealerCardReceived;
         public event GameEvents.OnDealerWinHand OnDealerWinHand;
         public event GameEvents.OnDealerLoseHand OnDealerLoseHand;
         public event GameEvents.OnDealerBlackjack OnDealerBlackjack;
@@ -33,6 +35,13 @@ namespace Blackjack.Core.Entities
             OnPushHand?.Invoke(this);
         }
 
+        public void AddCard(Card card)
+        {
+            Cards.Add(card);
+            OnCardReceivedEventArgs args = new OnCardReceivedEventArgs(this, card);
+            OnDealerCardReceived?.Invoke(this, args);
+        }
+
         public void Blackjack()
         {
             Result = Result.Blackjack;
@@ -40,7 +49,7 @@ namespace Blackjack.Core.Entities
             OnDealerBlackjack?.Invoke(this, args);
         }
 
-        public override bool CheckIsBust()
+        public override bool Bust()
         {
             if (CurrentScore <= 21) return false;
             Result = Result.Bust;

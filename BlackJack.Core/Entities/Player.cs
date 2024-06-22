@@ -4,10 +4,11 @@ namespace Blackjack.Core.Entities
 {
     public sealed class Player
     {
-        public Player(int position)
+        public Player(int position, string name)
         {
             CurrentHands = new List<PlayerHand>();
             Position = position;
+            Name = name;
         }
 
         public bool IsActive { get; set; }
