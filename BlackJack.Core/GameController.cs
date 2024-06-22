@@ -185,16 +185,16 @@ namespace Blackjack.Core
         public void GivePlayerNextCardInShoe(PlayerHand playerHand, bool checkBlackJackImmediately)
         {
             Console.WriteLine("GivePlayerNextCardInShoe");
-            //Card card = Shoe.NextCard;
-            Card card;
-            if (playerHand.Cards.Exists(i => i.CardType == CardType.Ace))
-            {
-                 card = Shoe.GetNextTen;
-            }
-            else
-            {
-                 card = Shoe.GetNextAce;
-            }
+            Card card = Shoe.NextCard;
+            //Card card;
+            //if (playerHand.Cards.Exists(i => i.CardType == CardType.Ace))
+            //{
+            //     card = Shoe.GetNextTen;
+            //}
+            //else
+            //{
+            //     card = Shoe.GetNextAce;
+            //}
 
             playerHand.AddCard(card);
 

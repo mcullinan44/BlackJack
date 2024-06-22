@@ -5,32 +5,41 @@
 <div>
     @foreach (Card card in this.DealerHand.Cards)
     {
-        <span>
-            @if (card.CardType == CardType.Numeric)
-            {
-                @card.Value
-            }
-            else if (card.CardType == CardType.Jack)
-            {
-                @("J")
-            }
-            else if (card.CardType == CardType.Queen)
-            {
-                @("Q")
-            }
-            else if (card.CardType == CardType.King)
-            {
-                @("K")
-            }
-            else
-            {
-                @("A")
-            }
-            @card.CardSuit.ToString();
-        </span>
+
+        @if (this.DealerHand.Cards.IndexOf(card) == 0 && !_showAllCards)
+        {
+            //show nothing
+        }
+        else
+        {
+
+            <span>
+                @if (card.CardType == CardType.Numeric)
+                {
+                    @card.Value
+                }
+                else if (card.CardType == CardType.Jack)
+                {
+                    @("J")
+                }
+                else if (card.CardType == CardType.Queen)
+                {
+                    @("Q")
+                }
+                else if (card.CardType == CardType.King)
+                {
+                    @("K")
+                }
+                else
+                {
+                    @("A")
+                }
+                @card.CardSuit.ToString();
+            </span>
+
+        }
     }
     <br/>
-     Score: @this.DealerHand.CurrentScore;
     <div>
         @_resultMessage
     </div>
@@ -47,6 +56,8 @@
     public DealerHand DealerHand { get; set; }
 
     private string? _resultMessage;
+
+    private bool _showAllCards = false;
 
     protected override Task OnInitializedAsync()
     {
@@ -71,6 +82,7 @@
 
     private void GameControllerOnOnGameEnd(object sender, EventArgs e)
     {
+        _showAllCards = true;
         StateHasChanged();
     }
 
