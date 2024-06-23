@@ -1,14 +1,31 @@
-﻿namespace Blackjack.Core.Entities
+﻿using BlackJack.Core;
+using System.Runtime.CompilerServices;
+using static BlackJack.Core.GameEvents;
+
+namespace Blackjack.Core.Entities
 {
     public sealed class Bet
     {
-        public Bet(PlayerHand hand)
+        public event GameEvents.OnBetChanged OnBetChanged;
+
+        private Guid _guid;
+
+        public Bet(Guid newGuid)
         {
-            this.Hand = hand;
+            this._guid = newGuid;
         }
 
-        public PlayerHand Hand { get; set; }
+
+
 
         public int Amount { get; set; } = 0;
+
+
+        public void IncreaseBase(int amountToIncrease)
+        {
+            this.Amount += amountToIncrease;
+            OnBetChangedEventArgs args = new OnBetChangedEventArgs(this);
+            OnBetChanged?.Invoke(this, args);
+        }
     }
 }

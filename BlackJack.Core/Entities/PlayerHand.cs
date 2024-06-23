@@ -11,7 +11,7 @@ namespace Blackjack.Core.Entities
         public event GameEvents.OnPushHand OnPushHand;
         public event GameEvents.OnBlackjack OnBlackjack;
         public event GameEvents.OnBust OnBust;
-        public event GameEvents.OnBetChanged OnBetChanged;
+
         public event GameEvents.OnActivate OnActivate;
         public event GameEvents.OnTakeCardForSplit OnTakeCardForSplit;
 
@@ -22,7 +22,6 @@ namespace Blackjack.Core.Entities
         {            
             Controller = gameController;
             Player = player;
-            CurrentBet = new Bet(this);
         }
 
         public State State
@@ -75,9 +74,7 @@ namespace Blackjack.Core.Entities
 
         public void IncreaseBet(int amountToIncrease)
         {
-            CurrentBet.Amount += amountToIncrease;
-            OnBetChangedEventArgs args = new OnBetChangedEventArgs(CurrentBet);
-            OnBetChanged?.Invoke(this, args);
+            this.CurrentBet.IncreaseBase(amountToIncrease);
         }
 
         public void AddCard(Card card)

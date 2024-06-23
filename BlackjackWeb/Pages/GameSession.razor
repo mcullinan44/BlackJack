@@ -6,10 +6,10 @@
 
 @if (_ready)
 {
-      <div style="font-size: 36px;">Bankroll: @_bankroll</div>
+      <div style="font-size: 36px;">Funds: @_bankroll</div>
       <div id="canvasContainerDealer" style="position: fixed; border-style: groove; width: 500px; height: 200px;">
         <DynamicComponent Type="typeof(DealerHandControl)"  @ref="_dynamicDealerHandControl"> </DynamicComponent>
-    </div>
+      </div>
                 <br />
                 <br />
                 <br />
@@ -22,7 +22,7 @@
                 <br />
 
 
-          <div id="canvasContainer" style="position: fixed; border-style: groove; width: 500px; height: 200px;">
+       <div id="canvasContainer" style="position: fixed; border-style: groove; width: 500px; height: 200px;">
            <DynamicComponent Type="typeof(PlayerHandControl)" @ref="_dynamicPlayerHandControl"> </DynamicComponent>
        </div>
                 <br />
@@ -33,39 +33,44 @@
                 <br />
                 <br/>
                 <br/>
-                <br/>
+                            <br/>
                 <br/>
                 <br />
+ 
+    <DynamicComponent Type="typeof(BetControl)" @ref="_dynamicBetControl"></DynamicComponent>
+    <br />
+
            Amount: <input type="text" @bind="@_betIncrement" /> 
-           @if (_canIncreaseBet)
-            {
-                <button @onclick="IncreaseBet">Place Bet</button>
-            }
-            <br/>
+    @if (_canIncreaseBet)
+    {
+
+        <button @onclick="IncreaseBet">Bet</button>
+
+    }
+    <br/>
 
             @if (_canDeal)
             {
                 <button @onclick="Deal">Deal</button>
             }
         
-    
-
 }
 
 @code {
 
     private Player _player; 
     private PlayerHand _playerHand;
+    private Bet _bet;
     private DealerHand _dealerHand;
     public GameController _controller;
     private DynamicComponent _dynamicPlayerHandControl;
     private DynamicComponent _dynamicDealerHandControl;
+    private DynamicComponent _dynamicBetControl;
 
     private string _playerHandId;
 
     private int _betIncrement;
 
-    private int _totalBet;
 
     private bool _canDeal = false;
 
@@ -84,7 +89,7 @@
         _controller.MinimumBet = Defaults.MINIMUM_BET;
         _controller.ShuffleAll();
         _betIncrement = controller.MinimumBet;
-        _bankroll = "1000";
+        _bankroll = "$1000";
         _ready = true;
         _canIncreaseBet = true;
 
@@ -93,11 +98,13 @@
 
     private void ControllerOnOnGameEnd(object sender, EventArgs e)
     {
-        _totalBet = 0;
         _canDeal = false;
         _canIncreaseBet = true;
         ((DealerHandControl)_dynamicDealerHandControl.Instance).Dispose();
         ((PlayerHandControl)_dynamicPlayerHandControl.Instance).Dispose();
+        ((BetControl)_dynamicBetControl.Instance).Dispose();
+        _bet = null;
+
         StateHasChanged();
     }
 
@@ -111,10 +118,17 @@
 
     private void IncreaseBet(MouseEventArgs obj)
     {
-        _totalBet += _betIncrement;
+        if (_bet == null)
+        {
+            _bet = new Bet(Guid.NewGuid());
+            ((BetControl)_dynamicBetControl.Instance).Initialize(_bet, _controller);
+
+        }
+        _bet.IncreaseBase(_betIncrement);
         _canDeal = true;
         _controller.AdjustPlayerBankroll(_player, -_betIncrement);
         StateHasChanged();
+
     }
 
     public void SplitHand()
@@ -138,35 +152,28 @@
 
     private async Task Deal()
     {
-
         _player.IsActive = true;
-        _playerHand = _controller.AddHandToPlayer(_player, State.Playing, _totalBet);
+        _playerHand = _controller.AddHandToPlayer(_player, State.Playing, _bet);
         _dealerHand = _controller.AddDealerHandToDealer();
-
-        ((PlayerHandControl)_dynamicPlayerHandControl.Instance).Initialize(_playerHand, _totalBet, _controller);
+        ((PlayerHandControl)_dynamicPlayerHandControl.Instance).Initialize(_playerHand,  _controller);
         ((DealerHandControl)_dynamicDealerHandControl.Instance).Initialize(_dealerHand, _controller);
 
         StateHasChanged();
-
         _canIncreaseBet = false;
         _canDeal = false;
         await _controller.DealAsync();
-
-
         StateHasChanged();
     }
 
 
     public void Dispose()
     {
-
         if (_controller != null)
         {
             _controller.OnBankrollChange -= ControllerOnOnBankrollChange;
             _controller.OnGameEnd -= ControllerOnOnGameEnd;
         }
         StateHasChanged();
-
         _ready = false;
     }
 }

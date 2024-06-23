@@ -10,7 +10,7 @@
     <img @ref="_spritesheet" hidden src="images/cards.png" />
      <BECanvas Width="500" Height="200" @ref="_canvas"></BECanvas>
     <div>
-    <strong>Current Bet: <label>@_bet.ToString("c0")</label></strong>
+    
     </div>
     <div>
 
@@ -49,10 +49,9 @@
 
     private bool _hasblackjack;
 
-
     private PlayerHand _playerHand;
 
-    private int _bet;
+
 
     private GameController _gameController;
 
@@ -61,14 +60,12 @@
     ElementReference _spritesheet;
     CardGraphicsHelper _graphicsHelper;
 
-    public void Initialize(PlayerHand playerHand, int bet, GameController controller)
+    private DynamicComponent _dynamicBetControl;
+
+    public void Initialize(PlayerHand playerHand, GameController controller)
     {
         this._playerHand = playerHand;
-        this._bet = bet;
         this._gameController = controller;
-
-        _playerHand.OnBetChanged +=  PlayerHandOnOnBetChanged;
-
         _playerHand.OnCardReceived += PlayerHandOnOnCardReceived;
         _playerHand.OnBust += PlayerHandOnOnBust;
         _playerHand.OnBlackjack += PlayerHandOnOnBlackjack;
@@ -159,12 +156,6 @@
         _graphicsHelper.DealCardFaceUp(args.Card, _playerHand);
     }
 
-    private void PlayerHandOnOnBetChanged(object sender, OnBetChangedEventArgs args)
-    {
-        _bet = args.Bet.Amount;
-        StateHasChanged();
-    }
-
     private void OnHit(MouseEventArgs obj)
     {
         _playerHand.Hit();
@@ -231,7 +222,6 @@
     {
         if (_playerHand != null)
         {
-            _playerHand.OnBetChanged -= PlayerHandOnOnBetChanged;
             _playerHand.OnCardReceived -= PlayerHandOnOnCardReceived;
             _playerHand.OnBust -= PlayerHandOnOnBust;
             _playerHand.OnBlackjack -= PlayerHandOnOnBlackjack;

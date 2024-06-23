@@ -1,9 +1,46 @@
-﻿
+﻿@using Blackjack.Core
+@using BlackJack.Core
+@using Blackjack.Core.Entities
 
-<strong>Current Bet: <label>@_bet.ToString("c0")</label></strong>
+@implements IDisposable
+
+@if (_isReady)
+{
+    <strong>Current Bet: <label>@_bet.Amount.ToString("c0")</label></strong>
+}
 
 @code {
-    private int _bet;
+    private Bet _bet;
+    private bool _isReady;
+    public PlayerHand PlayerHand { get; set; }
+    private GameController _gameController;
 
+    public void Initialize(Bet bet, GameController controller)
+    {
+        this._bet = bet;
+        this._gameController = controller;
+        _bet.OnBetChanged += OnBetChanged;
+        this._gameController.OnGameEnd += GameControllerOnOnGameEnd;
+        _isReady = true;
+        StateHasChanged();
+    }
 
+    private void OnBetChanged(object sender, OnBetChangedEventArgs e)
+    {
+        StateHasChanged();
+    }
+
+    private void GameControllerOnOnGameEnd(object sender, EventArgs e)
+    {
+        _isReady = false;
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        if (_bet != null)
+        {
+            _bet.OnBetChanged -= OnBetChanged;
+        }
+    }
 }

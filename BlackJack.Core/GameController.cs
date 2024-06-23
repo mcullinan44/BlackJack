@@ -81,14 +81,14 @@ namespace Blackjack.Core
             return this.Dealer.Hand;
         }
 
-        public PlayerHand AddHandToPlayer(Player player, State state, int bet)
+        public PlayerHand AddHandToPlayer(Player player, State state, Bet bet)
         {
             PlayerHand result = new(player, this)
             {
                 State = state
             };
             player.CurrentHands.Add(result);
-            result.IncreaseBet(bet);
+            result.CurrentBet = bet;
             return result;
         }
 
