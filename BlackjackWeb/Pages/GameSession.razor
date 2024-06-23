@@ -114,7 +114,6 @@
         _totalBet += _betIncrement;
         _canDeal = true;
         _controller.AdjustPlayerBankroll(_player, -_betIncrement);
-        _controller.IncreaseBet(_playerHand, _betIncrement);
         StateHasChanged();
     }
 

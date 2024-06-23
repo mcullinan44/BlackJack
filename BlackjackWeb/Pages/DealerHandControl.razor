@@ -12,7 +12,7 @@
     <img @ref="_spritesheet" hidden src="images/cards.png" />
     <BECanvas Width="500" Height="200" @ref="_canvas"></BECanvas>
     <div>
-        @_resultMessage
+    <strong>@_resultMessage</strong>
     </div>
 
 
@@ -76,19 +76,19 @@
 
     private void dealer_onLoseHand(Hand hand)
     {
-        _resultMessage = "DEALER LOSES with " + hand.CurrentScore.ToString();
+        _resultMessage = "DEALER LOSES WITH " + hand.CurrentScore.ToString();
         StateHasChanged();
     }
 
     private void dealer_onWinHand(Hand hand)
     {
-        _resultMessage = "DEALER WINS with " + hand.CurrentScore.ToString();
+        _resultMessage = "DEALER WINS WITH " + hand.CurrentScore.ToString();
         StateHasChanged();
     }
 
     private void dealer_onBust(object sender, OnCardReceivedEventArgs args)
     {
-        _resultMessage = "DEALER BUSTS with " + args.Hand.CurrentScore;
+        _resultMessage = "DEALER BUSTS WITH " + args.Hand.CurrentScore;
         StateHasChanged();
     }
 

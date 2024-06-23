@@ -112,8 +112,8 @@ namespace BlackjackWeb
                 , y * CARD_HEIGHT_RECT
                 , CARD_WIDTH
                 , CARD_HEIGHT
-                , 0
-                , 0
+                , 20
+                , 20
                 , CARD_WIDTH
                 , CARD_HEIGHT);
         }

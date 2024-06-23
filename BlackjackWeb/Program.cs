@@ -1,13 +1,13 @@
 
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
-
+CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("en-US");
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-
 
 var app = builder.Build();
 

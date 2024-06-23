@@ -10,7 +10,7 @@
     <img @ref="_spritesheet" hidden src="images/cards.png" />
      <BECanvas Width="500" Height="200" @ref="_canvas"></BECanvas>
     <div>
-        Bet: <label>@_bet.ToString("c0")</label>
+    <strong>Current Bet: <label>@_bet.ToString("c0")</label></strong>
     </div>
     <div>
 
@@ -31,7 +31,7 @@
         }
     </div>
 <div>
-    @_resultMessage
+    <strong>@_resultMessage</strong>
 </div>
 @code {
 
@@ -56,8 +56,6 @@
 
     private GameController _gameController;
 
-    private List<DynamicComponent> _cardControlComponentRefList;
-
     BECanvasComponent _canvas;
     Canvas2DContext _context;
     ElementReference _spritesheet;
@@ -68,8 +66,6 @@
         this._playerHand = playerHand;
         this._bet = bet;
         this._gameController = controller;
-
-        _cardControlComponentRefList = new List<DynamicComponent>();
 
         _playerHand.OnBetChanged +=  PlayerHandOnOnBetChanged;
 
@@ -124,32 +120,32 @@
 
     private void PlayerHandOnOnPushHand(Hand hand)
     {
-        _resultMessage = "PUSH with " + hand.CurrentScore;
+        _resultMessage = "PUSH WITH " + hand.CurrentScore;
         StateHasChanged();
     }
 
     private void PlayerHandOnOnLoseHand(Hand hand)
     {
-        _resultMessage = "PLAYER LOSES" + ((PlayerHand)hand).CurrentBet.Amount.ToString("c0") + " with " + hand.CurrentScore + ". Dealer has " + _gameController.Dealer.Hand.CurrentScore;
+        _resultMessage = "PLAYER LOSES " + ((PlayerHand)hand).CurrentBet.Amount.ToString("c0") + " WITH " + hand.CurrentScore + ".";
         StateHasChanged();
 
     }
 
     private void PlayerHandOnOnWinHand(Hand hand)
     {
-        _resultMessage = "PLAYER WINS " + ((PlayerHand)hand).CurrentBet.Amount.ToString("c0") + " with " + hand.CurrentScore + ". Dealer has " + _gameController.Dealer.Hand.CurrentScore;
+        _resultMessage = "PLAYER WINS " + ((PlayerHand)hand).CurrentBet.Amount.ToString("c0") + " WITH " + hand.CurrentScore + ".";
         StateHasChanged();
     }
 
     private void PlayerHandOnOnBlackjack(object sender, OnCardReceivedEventArgs args)
     {
-        _resultMessage = "BLACKJACK!!!! You win " + (_playerHand.CurrentBet.Amount * 1.5).ToString("c0");
+        _resultMessage = "BLACKJACK!!!! YOU WIN " + (_playerHand.CurrentBet.Amount * 1.5).ToString("c0");
         StateHasChanged();
     }
 
     private void PlayerHandOnOnBust(object sender, OnCardReceivedEventArgs args)
     {
-        _resultMessage = "PLAYER BUSTS with " + args.Hand.CurrentScore + ". " + "Lost " + ((PlayerHand)args.Hand).CurrentBet.Amount.ToString("c0");
+        _resultMessage = "PLAYER BUSTS WITH " + args.Hand.CurrentScore + ". " + "LOSES " + ((PlayerHand)args.Hand).CurrentBet.Amount.ToString("c0");
         StateHasChanged();
     }
 

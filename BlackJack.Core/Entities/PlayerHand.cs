@@ -78,7 +78,6 @@ namespace Blackjack.Core.Entities
             CurrentBet.Amount += amountToIncrease;
             OnBetChangedEventArgs args = new OnBetChangedEventArgs(CurrentBet);
             OnBetChanged?.Invoke(this, args);
-
         }
 
         public void AddCard(Card card)
