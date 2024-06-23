@@ -1,116 +1,88 @@
 ﻿@using Blackjack.Core
 @using BlackJack.Core
 @using Blackjack.Core.Entities
+@using Blazor.Extensions
+@using Blazor.Extensions.Canvas.Canvas2D
 
+@inject IJSRuntime JsRuntime;
 @implements IDisposable
 
-<div>
-    
-@if (_playing)
-{
 
-    @foreach (Card card in this._dealerHand.Cards)
-    {
 
-        @if (this._dealerHand.Cards.IndexOf(card) == 0 && !_showAllCards)
-        {
-            //show nothing
-        }
-        else
-        {
-
-            <span>
-                @if (card.CardType == CardType.Numeric)
-                {
-                    @card.Value
-                }
-                else if (card.CardType == CardType.Jack)
-                {
-                    @("J")
-                }
-                else if (card.CardType == CardType.Queen)
-                {
-                    @("Q")
-                }
-                else if (card.CardType == CardType.King)
-                {
-                    @("K")
-                }
-                else
-                {
-                    @("A")
-                }
-                @card.CardSuit.ToString();
-            </span>
-
-        }
-    }
-    <br/>
-
-}
-
+    <img @ref="_spritesheet" hidden src="images/cards.png" />
+    <BECanvas Width="500" Height="200" @ref="_canvas"></BECanvas>
     <div>
         @_resultMessage
     </div>
-</div>
 
 
 @code {
 
     private string? _resultMessage;
-
     private bool _showAllCards = false;
-
     private DealerHand _dealerHand;
-
     private GameController _gameController;
-
     private bool _playing;
+    BECanvasComponent _canvas;
+    Canvas2DContext _context;
+    ElementReference _spritesheet;
+    CardGraphicsHelper _graphicsHelper;
 
     public void Initialize(DealerHand dealerHand,  GameController controller)
     {
         this._dealerHand = dealerHand;
         this._gameController = controller;
+
         dealerHand.OnDealerBust += dealer_onBust;
         dealerHand.OnDealerBlackjack += dealer_onBlackjack;
         dealerHand.OnDealerWinHand += dealer_onWinHand;
         dealerHand.OnDealerLoseHand += dealer_onLoseHand;
         dealerHand.OnPushHand += dealer_onPushHand;
         dealerHand.OnDealerCardReceived += dealer_onCardReceived;
-        _playing = true;
         _gameController.OnGameEnd += GameControllerOnOnGameEnd;
         _gameController.OnNewDeal += GameControllerOnOnNewDeal;
 
         StateHasChanged();
     }
 
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (_canvas != null && _context == null)
+        {
+            _context = await _canvas.CreateCanvas2DAsync();
+            this._graphicsHelper = new CardGraphicsHelper(_spritesheet, _context, _canvas);
+        }
+    }
+
     private void GameControllerOnOnNewDeal(object sender, EventArgs e)
     {
         this._resultMessage = string.Empty;
+        _graphicsHelper.ClearCanvas();
         StateHasChanged();
     }
 
     private void GameControllerOnOnGameEnd(object sender, EventArgs e)
     {
-        _showAllCards = true;
+        _graphicsHelper.RevealAll(_dealerHand);
         StateHasChanged();
     }
 
     private void dealer_onPushHand(Hand hand)
     {
-        _resultMessage = "Push";
+        _resultMessage = "PUSH";
         StateHasChanged();
     }
 
     private void dealer_onLoseHand(Hand hand)
     {
-        _resultMessage = "Dealer loses with " + hand.CurrentScore.ToString();
+        _resultMessage = "DEALER LOSES with " + hand.CurrentScore.ToString();
         StateHasChanged();
     }
 
     private void dealer_onWinHand(Hand hand)
     {
-        _resultMessage = "Dealer wins with " + hand.CurrentScore.ToString();
+        _resultMessage = "DEALER WINS with " + hand.CurrentScore.ToString();
         StateHasChanged();
     }
 
@@ -129,19 +101,32 @@
 
     private void dealer_onCardReceived(object sender, OnCardReceivedEventArgs args)
     {
-        StateHasChanged();
+        if(_dealerHand.CardCount == 1)
+        {
+            _graphicsHelper.DealHoleCard(_dealerHand);
+        }
+        else
+        {
+            _graphicsHelper.DealCardFaceUp(args.Card, _dealerHand);
+        }
     }
-
 
     public void Dispose()
     {
-        _dealerHand.OnDealerBust += dealer_onBust;
-        _dealerHand.OnDealerBlackjack += dealer_onBlackjack;
-        _dealerHand.OnDealerWinHand += dealer_onWinHand;
-        _dealerHand.OnDealerLoseHand += dealer_onLoseHand;
-        _dealerHand.OnPushHand += dealer_onPushHand;
-        _dealerHand.OnDealerCardReceived += dealer_onCardReceived;
-        _gameController.OnNewDeal -= GameControllerOnOnNewDeal;
-        _gameController.OnGameEnd -= GameControllerOnOnGameEnd;
+        if(_dealerHand != null)
+        {
+            _dealerHand.OnDealerBust -= dealer_onBust;
+            _dealerHand.OnDealerBlackjack -= dealer_onBlackjack;
+            _dealerHand.OnDealerWinHand -= dealer_onWinHand;
+            _dealerHand.OnDealerLoseHand -= dealer_onLoseHand;
+            _dealerHand.OnPushHand -= dealer_onPushHand;
+            _dealerHand.OnDealerCardReceived -= dealer_onCardReceived;    
+        }
+
+        if(_gameController != null)
+        {
+            _gameController.OnNewDeal -= GameControllerOnOnNewDeal;
+            _gameController.OnGameEnd -= GameControllerOnOnGameEnd;
+        }
     }
 }

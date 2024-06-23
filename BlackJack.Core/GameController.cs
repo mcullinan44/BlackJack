@@ -178,7 +178,6 @@ namespace Blackjack.Core
 
         private void AdjustPlayerBankRoll(Player player, double amount)
         {
-            Console.WriteLine("AdjustPlayerBankRoll");
             player.PlayerbankRoll += amount;
             OnBankrollChangedEventArgs args = new OnBankrollChangedEventArgs(player);
             OnBankrollChange?.Invoke(this, args);
@@ -283,7 +282,7 @@ namespace Blackjack.Core
                 {
                     await Task.Delay(200);
                     OnShowAllCards?.Invoke(this, null);
-                    while (!Dealer.Hand.Bust() && Dealer.Hand.CurrentScore <= 16)
+                    while (!Dealer.Hand.IsBust() && Dealer.Hand.CurrentScore <= 16)
                     {
                         await Task.Delay(500);
                         GiveDealerACardAsync();
@@ -314,7 +313,7 @@ namespace Blackjack.Core
                 {
                     if (i.State == State.Stand || i.State == State.Doubled)
                     {
-                        bool isDealerBust = Dealer.Hand.Bust();
+                        bool isDealerBust = Dealer.Hand.IsBust();
                         if (i.CurrentScore > dealerScore || isDealerBust)
                         {
                             AdjustPlayerBankRoll(player, i.CurrentBet.Amount * 2);

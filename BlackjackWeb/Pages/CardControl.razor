@@ -1,0 +1,18 @@
+﻿@using Blackjack.Core.Entities;
+
+@if(_card != null)
+{
+    <span>@(_card.CardType.ToString() + " " + _card.Value + " " + _card.CardSuit.ToString())</span>
+
+    
+    
+}
+
+@code {
+    private Card _card;
+    public void Initialize(Card card)
+    {
+        this._card = card;
+
+    }
+}

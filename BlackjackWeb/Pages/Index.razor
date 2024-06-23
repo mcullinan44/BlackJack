@@ -3,13 +3,13 @@
 @using BlackJack.Core
 @using Blackjack.Core.Entities
 
+<div>
 @if(_newGameAvailable)
 {
     <button @onclick="StartNewSession">Get some money and find a new table!!!</button>
 }
-
-  <DynamicComponent Type="typeof(GameSession)" @ref="_dynamicGameSession"> </DynamicComponent>    
-
+  <DynamicComponent Type="typeof(GameSession)" @ref="_dynamicGameSession"> </DynamicComponent>
+</div>
 @code {
     private Player _player;
     private GameController _controller;
@@ -25,25 +25,21 @@
 
     private void ControllerOnOnGameEnd(object sender, EventArgs e)
     {
-        _newGameAvailable = true;
+        _newGameAvailable = false;
         StateHasChanged();
     }
 
     private void StartNewSession()
     {
-
         _controller = new GameController(4);
         this._player = new Player(1, string.Empty);
         _controller.OnGameEnd += ControllerOnOnGameEnd;
         _controller.OnNewDeal += ControllerOnOnNewDeal;
-
         if (_dynamicGameSession != null && ((GameSession)_dynamicGameSession.Instance)._controller != null)
         {
             ((GameSession)_dynamicGameSession.Instance).Dispose();
         }
-
         ((GameSession)_dynamicGameSession.Instance).Initialize(_controller, _player);
-
         _controller.PlayerList.Clear();
         _controller.AddPlayer(_player);
         _controller.SitDownToPlay();
