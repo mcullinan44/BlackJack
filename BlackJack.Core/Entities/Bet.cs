@@ -1,12 +1,10 @@
 ﻿using BlackJack.Core;
-using System.Runtime.CompilerServices;
-using static BlackJack.Core.GameEvents;
 
 namespace Blackjack.Core.Entities
 {
     public sealed class Bet
     {
-        public event GameEvents.OnBetChanged OnBetChanged;
+        public event GameEvents.BetChanged OnBetChanged;
 
         private Guid _guid;
 
@@ -15,16 +13,13 @@ namespace Blackjack.Core.Entities
             this._guid = newGuid;
         }
 
-
-
-
         public int Amount { get; set; } = 0;
 
 
         public void IncreaseBase(int amountToIncrease)
         {
             this.Amount += amountToIncrease;
-            OnBetChangedEventArgs args = new OnBetChangedEventArgs(this);
+            BetChangedEventArgs args = new BetChangedEventArgs(this);
             OnBetChanged?.Invoke(this, args);
         }
     }

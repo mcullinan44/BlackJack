@@ -1,16 +1,15 @@
 ﻿using BlackJack.Core;
-using static BlackJack.Core.GameEvents;
 
 namespace Blackjack.Core.Entities
 {
     public class DealerHand : Hand
     {
-        public event GameEvents.OnDealerCardReceived OnDealerCardReceived;
-        public event GameEvents.OnDealerWinHand OnDealerWinHand;
-        public event GameEvents.OnDealerLoseHand OnDealerLoseHand;
-        public event GameEvents.OnDealerBlackjack OnDealerBlackjack;
-        public event GameEvents.OnDealerBust OnDealerBust;
-        public event GameEvents.OnPushHand OnPushHand;
+        public event GameEvents.DealerCardReceived OnDealerCardReceived;
+        public event GameEvents.DealerWinHand OnDealerWinHand;
+        public event GameEvents.DealerLoseHand OnDealerLoseHand;
+        public event GameEvents.DealerBlackjack OnDealerBlackjack;
+        public event GameEvents.DealerBust OnDealerBust;
+        public event GameEvents.PushHand OnPushHand;
 
         public DealerHand(GameController gameController)
             : base(gameController)
@@ -38,14 +37,14 @@ namespace Blackjack.Core.Entities
         public void AddCard(Card card)
         {
             Cards.Add(card);
-            OnCardReceivedEventArgs args = new OnCardReceivedEventArgs(this, card);
+            CardReceivedEventArgs args = new CardReceivedEventArgs(this, card);
             OnDealerCardReceived?.Invoke(this, args);
         }
 
         public void Blackjack()
         {
             Result = Result.Blackjack;
-            OnCardReceivedEventArgs args = new OnCardReceivedEventArgs(this, null);
+            CardReceivedEventArgs args = new CardReceivedEventArgs(this, null);
             OnDealerBlackjack?.Invoke(this, args);
         }
 
@@ -53,7 +52,7 @@ namespace Blackjack.Core.Entities
         {
             if (CurrentScore <= 21) return false;
             Result = Result.Bust;
-            OnCardReceivedEventArgs args = new OnCardReceivedEventArgs(this, null);
+            CardReceivedEventArgs args = new CardReceivedEventArgs(this, null);
             OnDealerBust?.Invoke(this, args);
             return true;
 

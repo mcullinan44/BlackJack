@@ -5,13 +5,12 @@ namespace Blackjack.Core
 {
     public sealed class GameController
     {
-        public event GameEvents.OnBankrollChange OnBankrollChange;
-        public event GameEvents.OnShowAllCards OnShowAllCards;
-        public event GameEvents.OnGameEnd OnGameEnd;
-        public event GameEvents.OnShuffle OnShuffle;
-        public event GameEvents.OnTakeCardForSplit OnTakeCardForSplit;
-        public event GameEvents.OnNewDeal OnNewDeal;
-        public event GameEvents.OnSitDownToPlay OnSitDownToPlay;
+        public event GameEvents.BankrollChange OnBankrollChange;
+        public event GameEvents.ShowAllCards OnShowAllCards;
+        public event GameEvents.GameEnd OnGameEnd;
+        public event GameEvents.Shuffle OnShuffle;
+        public event GameEvents.NewDeal OnNewDeal;
+        public event GameEvents.SitDownToPlay OnSitDownToPlay;
 
         public GameController(int numberOfDecks)
         {
@@ -103,7 +102,7 @@ namespace Blackjack.Core
         public void AdjustPlayerBankroll(Player player, double amount)
         {
             player.PlayerbankRoll = player.PlayerbankRoll + amount;
-            OnBankrollChangedEventArgs args = new OnBankrollChangedEventArgs(player);
+            BankrollChangedEventArgs args = new BankrollChangedEventArgs(player);
             OnBankrollChange?.Invoke(this, args);
         }
 
@@ -116,13 +115,13 @@ namespace Blackjack.Core
             DealARoundOfCards();
 
             await Task.Delay(500);
-            GiveDealerACardAsync();
+            GiveDealerACard();
 
             await Task.Delay(250);
             DealARoundOfCards();
 
             await Task.Delay(250);
-            GiveDealerACardAsync();
+            GiveDealerACard();
 
             //check if the dealer has blackjack.
             if (Dealer.Hand.CurrentScore == 21)
@@ -179,7 +178,7 @@ namespace Blackjack.Core
         private void AdjustPlayerBankRoll(Player player, double amount)
         {
             player.PlayerbankRoll += amount;
-            OnBankrollChangedEventArgs args = new OnBankrollChangedEventArgs(player);
+            BankrollChangedEventArgs args = new BankrollChangedEventArgs(player);
             OnBankrollChange?.Invoke(this, args);
         }
 
@@ -225,7 +224,7 @@ namespace Blackjack.Core
             ActivePlayer.ActiveHand.RemoveCard(ActivePlayer.ActiveHand.Cards[1]);
         }
 
-        private async void GiveDealerACardAsync(DealType dealType = DealType.Standard)
+        private void GiveDealerACard(DealType dealType = DealType.Standard)
         {
             Card card;
             switch (dealType)
@@ -256,7 +255,7 @@ namespace Blackjack.Core
         {
             hand.IncreaseBet(amountToIncrease);
             hand.Player.PlayerbankRoll -= amountToIncrease;
-            OnBankrollChangedEventArgs args = new OnBankrollChangedEventArgs(hand.Player);
+            BankrollChangedEventArgs args = new BankrollChangedEventArgs(hand.Player);
             OnBankrollChange?.Invoke(this, args);
         }
 
@@ -285,7 +284,7 @@ namespace Blackjack.Core
                     while (!Dealer.Hand.IsBust() && Dealer.Hand.CurrentScore <= 16)
                     {
                         await Task.Delay(500);
-                        GiveDealerACardAsync();
+                        GiveDealerACard();
                     }
                     CalculateScore();
                     await Task.Delay(200);
@@ -344,5 +343,6 @@ namespace Blackjack.Core
             }
         }
         #endregion
+
     }
 }

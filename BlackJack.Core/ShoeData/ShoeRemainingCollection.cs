@@ -35,7 +35,7 @@ namespace Blackjack.Core.ShoeData
 
         public BindingList<ShoeRemaining> ShoeRemainingBindingList { get; }
 
-        private void controller_onCardReceived(object sender, OnCardReceivedEventArgs args)
+        private void controller_onCardReceived(object sender, CardReceivedEventArgs args)
         {
             ShoeRemainingBindingList.First(i => i.Suit == args.Card.CardSuit).Calculate();
         }

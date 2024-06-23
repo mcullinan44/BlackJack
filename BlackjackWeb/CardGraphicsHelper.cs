@@ -2,16 +2,15 @@
 using Blazor.Extensions;
 using Blazor.Extensions.Canvas.Canvas2D;
 using Microsoft.AspNetCore.Components;
-using System.Drawing;
 
 namespace BlackjackWeb
 {
     public class CardGraphicsHelper
     {
-        const int CARD_WIDTH = 72;
-        const int CARD_HEIGHT = 97;
-        const int CARD_WIDTH_RECT = 73;
-        const int CARD_HEIGHT_RECT = 98;
+        private const int CardWidth = 72;
+        private const int CardHeight = 97;
+        private const int CardWidthRect = 73;
+        private const int CardHeightRect = 98;
 
         private readonly ElementReference _spritesheet;
         private readonly Canvas2DContext _context;
@@ -29,7 +28,7 @@ namespace BlackjackWeb
         {
             int cardCountWidthOffset = hand.CardCount == 0 ? 0 : hand.CardCount * 20;
             int cardCountHeightOffset = hand.CardCount == 0 ? 0 : hand.CardCount * 20;
-            AddCardFaceUp(card, hand, cardCountWidthOffset, cardCountHeightOffset);
+            await AddCardFaceUp(card, hand, cardCountWidthOffset, cardCountHeightOffset);
         }
 
 
@@ -89,14 +88,14 @@ namespace BlackjackWeb
             }
 
             await _context.DrawImageAsync(_spritesheet
-                    , x * CARD_WIDTH_RECT
-                    , y * CARD_HEIGHT_RECT
-                    , CARD_WIDTH
-                    , CARD_HEIGHT
+                    , x * CardWidthRect
+                    , y * CardHeightRect
+                    , CardWidth
+                    , CardHeight
                     , cardCountWidthOffset
                     , cardCountHeightOffset
-                    , CARD_WIDTH
-                    , CARD_HEIGHT);
+                    , CardWidth
+                    , CardHeight);
 
         }
 
@@ -108,20 +107,19 @@ namespace BlackjackWeb
             int x = 7;
             int y = 5;
             await _context.DrawImageAsync(_spritesheet
-                , x * CARD_WIDTH_RECT
-                , y * CARD_HEIGHT_RECT
-                , CARD_WIDTH
-                , CARD_HEIGHT
+                , x * CardWidthRect
+                , y * CardHeightRect
+                , CardWidth
+                , CardHeight
                 , 20
                 , 20
-                , CARD_WIDTH
-                , CARD_HEIGHT);
+                , CardWidth
+                , CardHeight);
         }
 
 
         public async Task RevealAll(Hand hand)
         {
-
             await ClearCanvas();
             foreach(Card card in hand.Cards)
             {

@@ -42,19 +42,19 @@ namespace BlackJack.WinForm
             lblOutcome.Visible = true;
         }
 
-        private void dealer_onBust(object sender, OnCardReceivedEventArgs args)
+        private void dealer_onBust(object sender, CardReceivedEventArgs args)
         {
             lblOutcome.Text = "Bust with " + args.Hand.CurrentScore;
             lblOutcome.Visible = true;
         }
 
-        private void dealer_onBlackjack(object sender, OnCardReceivedEventArgs args)
+        private void dealer_onBlackjack(object sender, CardReceivedEventArgs args)
         {
             lblOutcome.Text = "Blackjack";
             lblOutcome.Visible = true;
         }
 
-        private void dealer_onCardReceived(object sender, OnCardReceivedEventArgs args)
+        private void dealer_onCardReceived(object sender, CardReceivedEventArgs args)
         {
             try
             {

@@ -4,55 +4,34 @@
 @using Blazor.Extensions
 @using Blazor.Extensions.Canvas.Canvas2D
 
-@inject IJSRuntime JsRuntime;
 @implements IDisposable
 
-    <img @ref="_spritesheet" hidden src="images/cards.png" />
-     <BECanvas Width="500" Height="200" @ref="_canvas"></BECanvas>
-    <div>
-    
-    </div>
-    <div>
+<img @ref="_spritesheet" hidden src="images/cards.png" />
+<BECanvas Width="500" Height="200" @ref="_canvas"></BECanvas>
+<div>
 
-        @if (_hittable)
-        {
-            <button @onclick="OnHit">Hit</button>
-        }
+    @if (_hittable)
+    {
+        <button @onclick="OnHit">Hit</button>
+    }
 
-        @if (_standable)
-        {
-            <button @onclick="OnStand">Stand</button>
+    @if (_standable)
+    {
+        <button @onclick="OnStand">Stand</button>
 
-        }
+    }
 
-        @if (_doubleable)
-        {
-            <button @onclick="OnDouble">Double</button>
-        }
-    </div>
+    @if (_doubleable)
+    {
+        <button @onclick="OnDouble">Double</button>
+    }
+</div>
 <div>
     <strong>@_resultMessage</strong>
 </div>
 @code {
 
-    private bool _hittable;
-
-    private bool _standable;
-
-    private bool _doubleable;
-
-    private bool _splitable;
-
-    private string _resultMessage;
-
-    private double _winningAmount;
-
-    private bool _hasblackjack;
-
     private PlayerHand _playerHand;
-
-
-
     private GameController _gameController;
 
     BECanvasComponent _canvas;
@@ -60,7 +39,11 @@
     ElementReference _spritesheet;
     CardGraphicsHelper _graphicsHelper;
 
-    private DynamicComponent _dynamicBetControl;
+    private bool _hittable;
+    private bool _standable;
+    private bool _doubleable;
+    private string _resultMessage;
+ 
 
     public void Initialize(PlayerHand playerHand, GameController controller)
     {
@@ -93,18 +76,18 @@
     private void GameControllerOnOnNewDeal(object sender, EventArgs e)
     {
         this._resultMessage = string.Empty;
-        _graphicsHelper.ClearCanvas();
+        _ = _graphicsHelper.ClearCanvas();
         StateHasChanged();
     }
 
     private void GameControllerOnOnGameEnd(object sender, EventArgs e)
     {
-        _doubleable = _hittable = _standable = _splitable = false;
+        _doubleable = _hittable = _standable = false;
         this._playerHand.Cards.Clear();
         StateHasChanged();
     }
 
-    private void PlayerHandOnOnTakeCardForSplit(object sender, OnCardRemovedForSplitEventArgs e)
+    private void PlayerHandOnOnTakeCardForSplit(object sender, CardRemovedForSplitEventArgs e)
     {
 
     }
@@ -134,26 +117,26 @@
         StateHasChanged();
     }
 
-    private void PlayerHandOnOnBlackjack(object sender, OnCardReceivedEventArgs args)
+    private void PlayerHandOnOnBlackjack(object sender, CardReceivedEventArgs args)
     {
         _resultMessage = "BLACKJACK!!!! YOU WIN " + (_playerHand.CurrentBet.Amount * 1.5).ToString("c0");
         StateHasChanged();
     }
 
-    private void PlayerHandOnOnBust(object sender, OnCardReceivedEventArgs args)
+    private void PlayerHandOnOnBust(object sender, CardReceivedEventArgs args)
     {
         _resultMessage = "PLAYER BUSTS WITH " + args.Hand.CurrentScore + ". " + "LOSES " + ((PlayerHand)args.Hand).CurrentBet.Amount.ToString("c0");
         StateHasChanged();
     }
 
 
-    private void PlayerHandOnOnCardReceived(object sender, OnCardReceivedEventArgs args)
+    private void PlayerHandOnOnCardReceived(object sender, CardReceivedEventArgs args)
     {
         if(_playerHand.State == State.Playing)
         {
             ActivateButtons();
         }
-        _graphicsHelper.DealCardFaceUp(args.Card, _playerHand);
+        _ = _graphicsHelper.DealCardFaceUp(args.Card, _playerHand);
     }
 
     private void OnHit(MouseEventArgs obj)
@@ -168,11 +151,6 @@
         StateHasChanged();
     }
 
-    private void OnSplit(MouseEventArgs obj)
-    {
-
-    }
-
     private void OnDouble(MouseEventArgs obj)
     {
         _playerHand.DoubleDown();
@@ -182,7 +160,7 @@
 
     private void DisableButtons()
     {
-        _hittable = _standable = _splitable = _doubleable = false;
+        _hittable = _standable = _doubleable = false;
         StateHasChanged();
     }
 
@@ -193,29 +171,28 @@
         //can't split more than two times.
         if(_gameController.ActivePlayer.CurrentHands.Count == 3)
         {
-            _splitable = false;
-
+            //_splitable = false;
         }
         if (_playerHand.Cards.Count == 2)
         {
             if (_playerHand.Cards[0].CardType == _playerHand.Cards[1].CardType
                 && _playerHand.Cards[0].Value == _playerHand.Cards[1].Value)
             {
-                _splitable = true;
+                //_splitable = true;
 
             }
             _doubleable = true;
         }
         else
         {
-            _doubleable = _splitable = false;
+            _doubleable =  false;
         }
         StateHasChanged();
     }
 
     public void DeactivateButtons()
     {
-        _hittable = _splitable = _standable = _doubleable =  false;
+        _hittable = _standable = _doubleable =  false;
     }
 
     public void Dispose()

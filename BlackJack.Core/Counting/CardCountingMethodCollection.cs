@@ -23,7 +23,7 @@ namespace Blackjack.Core.Counting
             //this.controller.onCardReceived += controller_onCardReceived;
         }
 
-        private void controller_onCardReceived(object sender, OnCardReceivedEventArgs args)
+        private void controller_onCardReceived(object sender, CardReceivedEventArgs args)
         {
             foreach (var item in _cardCountingStrategyBindingList)
             {

@@ -4,33 +4,31 @@ namespace BlackJack.Core
 {
     public static class GameEvents
     {
-        //TODO change to EventHandler
-        
-        public delegate void OnBankrollChange(object sender, OnBankrollChangedEventArgs e);
-        public delegate void OnShowAllCards(object sender, EventArgs e);
-        public delegate void OnActivate(object sender, EventArgs e);
-        public delegate void OnCardReceived(object sender, OnCardReceivedEventArgs args);
-        public delegate void OnTakeCardForSplit(object sender, OnCardRemovedForSplitEventArgs e);
-        public delegate void OnDealerCardReceived(object sender, OnCardReceivedEventArgs args);
-        public delegate void OnBust(object sender, OnCardReceivedEventArgs args);
-        public delegate void OnBlackjack(object sender, OnCardReceivedEventArgs args);
-        public delegate void OnWinHand(Hand hand);
-        public delegate void OnLoseHand(Hand hand);
-        public delegate void OnDealerBust(object sender, OnCardReceivedEventArgs args);
-        public delegate void OnDealerBlackjack(object sender, OnCardReceivedEventArgs args);
-        public delegate void OnDealerWinHand(Hand hand);
-        public delegate void OnDealerLoseHand(Hand hand);
-        public delegate void OnPushHand(Hand hand);
-        public delegate void OnGameEnd(object sender, EventArgs e);
-        public delegate void OnBetChanged(object sender, OnBetChangedEventArgs args);
-        public delegate void OnShuffle(object sender, EventArgs e);
-        public delegate void OnNewDeal(object sender, EventArgs e);
-        public delegate void OnSitDownToPlay(object sender, EventArgs e);
+        public delegate void BankrollChange(object sender, BankrollChangedEventArgs e);
+        public delegate void ShowAllCards(object sender, EventArgs e);
+        public delegate void Activate(object sender, EventArgs e);
+        public delegate void CardReceived(object sender, CardReceivedEventArgs args);
+        public delegate void TakeCardForSplit(object sender, CardRemovedForSplitEventArgs e);
+        public delegate void DealerCardReceived(object sender, CardReceivedEventArgs args);
+        public delegate void Bust(object sender, CardReceivedEventArgs args);
+        public delegate void Blackjack(object sender, CardReceivedEventArgs args);
+        public delegate void WinHand(Hand hand);
+        public delegate void LoseHand(Hand hand);
+        public delegate void DealerBust(object sender, CardReceivedEventArgs args);
+        public delegate void DealerBlackjack(object sender, CardReceivedEventArgs args);
+        public delegate void DealerWinHand(Hand hand);
+        public delegate void DealerLoseHand(Hand hand);
+        public delegate void PushHand(Hand hand);
+        public delegate void GameEnd(object sender, EventArgs e);
+        public delegate void BetChanged(object sender, BetChangedEventArgs args);
+        public delegate void Shuffle(object sender, EventArgs e);
+        public delegate void NewDeal(object sender, EventArgs e);
+        public delegate void SitDownToPlay(object sender, EventArgs e);
     }
 
-    public class OnCardRemovedForSplitEventArgs : EventArgs
+    public class CardRemovedForSplitEventArgs : EventArgs
     {
-        public OnCardRemovedForSplitEventArgs(Card card)
+        public CardRemovedForSplitEventArgs(Card card)
         {
             this.Card = card;
         }
@@ -38,9 +36,9 @@ namespace BlackJack.Core
         public Card Card { get; }
     }
 
-    public class OnCardReceivedEventArgs : EventArgs
+    public class CardReceivedEventArgs : EventArgs
     {
-        public OnCardReceivedEventArgs(Hand hand, Card card)
+        public CardReceivedEventArgs(Hand hand, Card card)
         {
             this.Hand = hand;
             this.Card = card;
@@ -51,18 +49,18 @@ namespace BlackJack.Core
         public Card Card { get; }
     }
 
-    public class OnBankrollChangedEventArgs: EventArgs
+    public class BankrollChangedEventArgs: EventArgs
     {
-        public OnBankrollChangedEventArgs(Player player)
+        public BankrollChangedEventArgs(Player player)
         {
             this.Player = player;
         }
         public Player Player { get; }
     }
 
-    public class OnBetChangedEventArgs : EventArgs
+    public class BetChangedEventArgs : EventArgs
     {
-        public OnBetChangedEventArgs(Bet bet)
+        public BetChangedEventArgs(Bet bet)
         {
             this.Bet = bet;
         }

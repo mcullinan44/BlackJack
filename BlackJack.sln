@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33110.190
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlackJack.WinForm", "BlackJack\BlackJack.WinForm.csproj", "{510CB0D8-1BD0-44C2-A412-2326CE048BC8}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlackJack.Core", "BlackJack.Core\BlackJack.Core.csproj", "{6DE45465-1296-4715-AD1F-9D8442C3B153}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "Tests\Tests.csproj", "{9B437D7A-B5B2-4259-A542-76E7FF4EE89F}"
@@ -17,10 +15,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{510CB0D8-1BD0-44C2-A412-2326CE048BC8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{510CB0D8-1BD0-44C2-A412-2326CE048BC8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{510CB0D8-1BD0-44C2-A412-2326CE048BC8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{510CB0D8-1BD0-44C2-A412-2326CE048BC8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6DE45465-1296-4715-AD1F-9D8442C3B153}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6DE45465-1296-4715-AD1F-9D8442C3B153}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6DE45465-1296-4715-AD1F-9D8442C3B153}.Release|Any CPU.ActiveCfg = Release|Any CPU

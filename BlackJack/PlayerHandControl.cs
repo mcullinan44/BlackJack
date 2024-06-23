@@ -35,7 +35,7 @@ namespace BlackJack.WinForm
             btnStand.Click += btnStand_Click;
         }
 
-        private void PlayerHand_OnTakeCardForSplit(object sender, OnCardRemovedForSplitEventArgs e)
+        private void PlayerHand_OnTakeCardForSplit(object sender, CardRemovedForSplitEventArgs e)
         {
             Card result = e.Card;
             PlayerHand.Cards.Remove(result);
@@ -43,7 +43,7 @@ namespace BlackJack.WinForm
             pnlHand.Controls.RemoveAt(0);
         }
 
-        private void PlayerHand_onBetChanged(object sender, OnBetChangedEventArgs args)
+        private void PlayerHand_onBetChanged(object sender, BetChangedEventArgs args)
         {
             lblBet.Text = (args.Bet.Amount * 1).ToString("c0");
         }
@@ -90,7 +90,7 @@ namespace BlackJack.WinForm
             btnSplit.Enabled = false;
         }
 
-        private void hand_onBlackjack(object sender, OnCardReceivedEventArgs args)
+        private void hand_onBlackjack(object sender, CardReceivedEventArgs args)
         {
             lblWinning.Text = "+ " + (this.PlayerHand.CurrentBet.Amount * 1.5).ToString("c0");
             lblWinning.Visible = lblOutcome.Visible = true;
@@ -98,7 +98,7 @@ namespace BlackJack.WinForm
             IsPlaying = false;
         }
 
-        private void hand_onBust(object sender, OnCardReceivedEventArgs args)
+        private void hand_onBust(object sender, CardReceivedEventArgs args)
         {
             lblWinning.Text = "-" + ((PlayerHand)args.Hand).CurrentBet.Amount.ToString("c0");
             lblWinning.Visible = lblOutcome.Visible = true;
@@ -130,7 +130,7 @@ namespace BlackJack.WinForm
             IsPlaying = false;
         }
 
-        private void hand_onCardReceived(object sender, OnCardReceivedEventArgs args)
+        private void hand_onCardReceived(object sender, CardReceivedEventArgs args)
         {
             AddCard(args.Card);
             if(PlayerHand.State == State.Playing)

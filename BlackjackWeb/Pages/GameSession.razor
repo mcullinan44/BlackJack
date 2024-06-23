@@ -1,8 +1,6 @@
-﻿@using Microsoft.AspNetCore.Components
-@using Blackjack.Core
+﻿@using Blackjack.Core
 @using BlackJack.Core
 @using Blackjack.Core.Entities
-@using Microsoft.AspNetCore.Mvc
 
 @if (_ready)
 {
@@ -38,9 +36,7 @@
                 <br />
  
     <DynamicComponent Type="typeof(BetControl)" @ref="_dynamicBetControl"></DynamicComponent>
-    <br />
-
-           Amount: <input type="text" @bind="@_betIncrement" /> 
+    <br /> <input type="text" @bind="@_betIncrement" placeholder="Place bet..."/> 
     @if (_canIncreaseBet)
     {
 
@@ -62,22 +58,14 @@
     private PlayerHand _playerHand;
     private Bet _bet;
     private DealerHand _dealerHand;
-    public GameController _controller;
+    private GameController _controller;
     private DynamicComponent _dynamicPlayerHandControl;
     private DynamicComponent _dynamicDealerHandControl;
     private DynamicComponent _dynamicBetControl;
-
-    private string _playerHandId;
-
-    private int _betIncrement;
-
-
-    private bool _canDeal = false;
-
-    private bool _canIncreaseBet = false;
-
     private string _bankroll;
-
+    private int _betIncrement;
+    private bool _canDeal;
+    private bool _canIncreaseBet;
     private bool _ready;
 
     public void Initialize(GameController controller, Player player)
@@ -100,16 +88,16 @@
     {
         _canDeal = false;
         _canIncreaseBet = true;
-        ((DealerHandControl)_dynamicDealerHandControl.Instance).Dispose();
-        ((PlayerHandControl)_dynamicPlayerHandControl.Instance).Dispose();
-        ((BetControl)_dynamicBetControl.Instance).Dispose();
+        ((DealerHandControl)_dynamicDealerHandControl.Instance)?.Dispose();
+        ((PlayerHandControl)_dynamicPlayerHandControl.Instance)?.Dispose();
+        ((BetControl)_dynamicBetControl.Instance)?.Dispose();
         _bet = null;
 
         StateHasChanged();
     }
 
 
-    private void ControllerOnOnBankrollChange(object sender, OnBankrollChangedEventArgs e)
+    private void ControllerOnOnBankrollChange(object sender, BankrollChangedEventArgs e)
     {
         _bankroll = e.Player.PlayerbankRoll.ToString("c0");
         StateHasChanged();
@@ -121,7 +109,7 @@
         if (_bet == null)
         {
             _bet = new Bet(Guid.NewGuid());
-            ((BetControl)_dynamicBetControl.Instance).Initialize(_bet, _controller);
+            ((BetControl)_dynamicBetControl.Instance)?.Initialize(_bet, _controller);
 
         }
         _bet.IncreaseBase(_betIncrement);
@@ -155,8 +143,8 @@
         _player.IsActive = true;
         _playerHand = _controller.AddHandToPlayer(_player, State.Playing, _bet);
         _dealerHand = _controller.AddDealerHandToDealer();
-        ((PlayerHandControl)_dynamicPlayerHandControl.Instance).Initialize(_playerHand,  _controller);
-        ((DealerHandControl)_dynamicDealerHandControl.Instance).Initialize(_dealerHand, _controller);
+        ((PlayerHandControl)_dynamicPlayerHandControl.Instance)?.Initialize(_playerHand,  _controller);
+        ((DealerHandControl)_dynamicDealerHandControl.Instance)?.Initialize(_dealerHand, _controller);
 
         StateHasChanged();
         _canIncreaseBet = false;

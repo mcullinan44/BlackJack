@@ -1,19 +1,18 @@
-﻿using System.Dynamic;
-using BlackJack.Core;
+﻿using BlackJack.Core;
 
 namespace Blackjack.Core.Entities
 {
     public class PlayerHand : Hand
     {
-        public event GameEvents.OnCardReceived OnCardReceived;
-        public event GameEvents.OnWinHand OnWinHand;
-        public event GameEvents.OnLoseHand OnLoseHand;
-        public event GameEvents.OnPushHand OnPushHand;
-        public event GameEvents.OnBlackjack OnBlackjack;
-        public event GameEvents.OnBust OnBust;
+        public event GameEvents.CardReceived OnCardReceived;
+        public event GameEvents.WinHand OnWinHand;
+        public event GameEvents.LoseHand OnLoseHand;
+        public event GameEvents.PushHand OnPushHand;
+        public event GameEvents.Blackjack OnBlackjack;
+        public event GameEvents.Bust OnBust;
 
-        public event GameEvents.OnActivate OnActivate;
-        public event GameEvents.OnTakeCardForSplit OnTakeCardForSplit;
+        public event GameEvents.Activate OnActivate;
+        public event GameEvents.TakeCardForSplit OnTakeCardForSplit;
 
         private State _state = State.NotYetPlayed;
 
@@ -56,7 +55,7 @@ namespace Blackjack.Core.Entities
         
         public void RemoveCard(Card cardToRemove)
         {
-            OnCardRemovedForSplitEventArgs args = new OnCardRemovedForSplitEventArgs(cardToRemove);
+            CardRemovedForSplitEventArgs args = new CardRemovedForSplitEventArgs(cardToRemove);
             this.Cards.Remove(cardToRemove);
             OnTakeCardForSplit?.Invoke(this, args);
         }
@@ -64,7 +63,7 @@ namespace Blackjack.Core.Entities
         public void Blackjack()
         {
             Result = Result.Blackjack;
-            OnCardReceivedEventArgs args = new OnCardReceivedEventArgs(this, null);
+            CardReceivedEventArgs args = new CardReceivedEventArgs(this, null);
             OnBlackjack?.Invoke(this, args);
         }
 
@@ -80,7 +79,7 @@ namespace Blackjack.Core.Entities
         public void AddCard(Card card)
         {
             Cards.Add(card);
-            OnCardReceivedEventArgs args = new OnCardReceivedEventArgs(this, card);
+            CardReceivedEventArgs args = new CardReceivedEventArgs(this, card);
             OnCardReceived?.Invoke(this, args);
         }
 
@@ -88,7 +87,7 @@ namespace Blackjack.Core.Entities
         {
             if (CurrentScore <= 21) return false;
             Result = Result.Bust;
-            OnCardReceivedEventArgs args = new OnCardReceivedEventArgs(this, null);
+            CardReceivedEventArgs args = new CardReceivedEventArgs(this, null);
             OnBust?.Invoke(this, args);
             return true;
         }

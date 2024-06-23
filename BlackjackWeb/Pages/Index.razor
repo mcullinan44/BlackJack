@@ -1,19 +1,17 @@
 ﻿@page "/"
 @using Blackjack.Core
-@using BlackJack.Core
 @using Blackjack.Core.Entities
 
 <div>
-@if(_newGameAvailable)
-{
-    <button @onclick="StartNewSession">PLAY</button>
-}
-  <DynamicComponent Type="typeof(GameSession)" @ref="_dynamicGameSession"> </DynamicComponent>
+    @if (_newGameAvailable)
+    {
+        <button @onclick="StartNewSession">PLAY</button>
+    }
+    <DynamicComponent Type="typeof(GameSession)" @ref="_dynamicGameSession"> </DynamicComponent>
 </div>
 @code {
     private Player _player;
     private GameController _controller;
-    private bool _ready;
     private bool _newGameAvailable = true;
     private DynamicComponent _dynamicGameSession;
 
@@ -32,20 +30,16 @@
     private void StartNewSession()
     {
         _controller = new GameController(4);
-        this._player = new Player(1, string.Empty);
+        _player = new Player(1, string.Empty);
         _controller.OnGameEnd += ControllerOnOnGameEnd;
         _controller.OnNewDeal += ControllerOnOnNewDeal;
-        if (_dynamicGameSession != null && ((GameSession)_dynamicGameSession.Instance)._controller != null)
-        {
-            ((GameSession)_dynamicGameSession.Instance).Dispose();
-        }
-        ((GameSession)_dynamicGameSession.Instance).Initialize(_controller, _player);
+        ((GameSession)_dynamicGameSession?.Instance)?.Dispose();
+        if (_dynamicGameSession != null) ((GameSession)_dynamicGameSession.Instance)?.Initialize(_controller, _player);
         _controller.PlayerList.Clear();
         _controller.AddPlayer(_player);
         _controller.SitDownToPlay();
         _player.PlayerbankRoll = 1000;
         _controller.SetPlayerActive(_player);
-        _ready = true;
         _newGameAvailable = false;
         StateHasChanged();
     }

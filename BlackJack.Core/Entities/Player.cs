@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Blackjack.Core.Entities
+﻿namespace Blackjack.Core.Entities
 {
     public sealed class Player
     {

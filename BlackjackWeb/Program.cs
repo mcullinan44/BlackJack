@@ -1,6 +1,4 @@
 
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
 using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
