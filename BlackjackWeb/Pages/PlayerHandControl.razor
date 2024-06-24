@@ -8,24 +8,24 @@
 
 <img @ref="_spritesheet" hidden src="images/cards.png" />
 <BECanvas Width="500" Height="200" @ref="_canvas"></BECanvas>
-<div>
-
+    <div class="player-hand-action-container">
     @if (_hittable)
     {
-        <button @onclick="OnHit">Hit</button>
+        <button class="button-action" @onclick="OnHit">Hit</button>
     }
 
     @if (_standable)
     {
-        <button @onclick="OnStand">Stand</button>
+            <button class="button-action" @onclick="OnStand">Stand</button>
 
     }
 
     @if (_doubleable)
     {
-        <button @onclick="OnDouble">Double</button>
+            <button class="button-action" @onclick="OnDouble">Double</button>
     }
-</div>
+    
+    </div>
 <div>
     <strong>@_resultMessage</strong>
 </div>

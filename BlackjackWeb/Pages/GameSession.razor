@@ -4,52 +4,50 @@
 
 @if (_ready)
 {
-      <div style="font-size: 36px;">Funds: @_bankroll</div>
-      <div id="canvasContainerDealer" style="position: fixed; border-style: groove; width: 500px; height: 200px;">
-        <DynamicComponent Type="typeof(DealerHandControl)"  @ref="_dynamicDealerHandControl"> </DynamicComponent>
-      </div>
-                <br />
-                <br />
-                <br />
-                <br />
-                <br />
-                <br/>
-                <br/>
-                <br/>
-                <br/>
-                <br />
+    <div class="game-board">
+        <div class="bankroll">
+            <div style="font-size: 24px;">Funds:<br /> @_bankroll</div>    
 
+        </div>
+        <div id="canvasContainerDealer" style="border-style: none; " class="flex-item">
+            <DynamicComponent Type="typeof(DealerHandControl)" @ref="_dynamicDealerHandControl"> </DynamicComponent>
+        </div>
+        <div id="canvasContainer" style="border-style: none;" class="flex-item">
+            <DynamicComponent Type="typeof(PlayerHandControl)" @ref="_dynamicPlayerHandControl"> </DynamicComponent>
 
-       <div id="canvasContainer" style="position: fixed; border-style: groove; width: 500px; height: 200px;">
-           <DynamicComponent Type="typeof(PlayerHandControl)" @ref="_dynamicPlayerHandControl"> </DynamicComponent>
-       </div>
-                <br />
-                <br />
-                <br />
-                <br />
-                <br />
-                <br />
-                <br/>
-                <br/>
-                            <br/>
-                <br/>
-                <br />
- 
-    <DynamicComponent Type="typeof(BetControl)" @ref="_dynamicBetControl"></DynamicComponent>
-    <br /> <input type="text" @bind="@_betIncrement" placeholder="Place bet..."/> 
-    @if (_canIncreaseBet)
-    {
-
-        <button @onclick="IncreaseBet">Bet</button>
-
-    }
-    <br/>
-
-            @if (_canDeal)
-            {
-                <button @onclick="Deal">Deal</button>
-            }
+        </div>
+        <div class="flex-item">
+            <div class="hand-input-container">
+    
+                <div class="hand-input-item2 player-hand-start-bet-container">
+                    <div class="bet-incremenet-container">
+                        
+                        @if (_canIncreaseBet)
+                        {
+                            <button class="button-action" @onclick="(() => this.IncreaseBet(5))">$5</button>
+                            <button class="button-action" @onclick="(() => this.IncreaseBet(10))">$10</button>
+                            <button class="button-action" @onclick="(() => this.IncreaseBet(25))">$25</button>
+                            <button class="button-action" @onclick="(() => this.IncreaseBet(50))">$50</button>
+                        }
+              
+                    </div>
+                    
+                    @if (_canDeal)
+                    {
+                        <button @onclick="Deal" class="button-deal">Deal</button>
+                    }
+       
+         
+                </div>
+            </div>
+            
+        </div>
         
+        <div class="flex-item">
+            <DynamicComponent Type="typeof(BetControl)" @ref="_dynamicBetControl"></DynamicComponent>
+        </div>
+    </div>
+
 }
 
 @code {
@@ -63,7 +61,6 @@
     private DynamicComponent _dynamicDealerHandControl;
     private DynamicComponent _dynamicBetControl;
     private string _bankroll;
-    private int _betIncrement;
     private bool _canDeal;
     private bool _canIncreaseBet;
     private bool _ready;
@@ -76,7 +73,6 @@
         _controller.OnGameEnd += ControllerOnOnGameEnd;
         _controller.MinimumBet = Defaults.MINIMUM_BET;
         _controller.ShuffleAll();
-        _betIncrement = controller.MinimumBet;
         _bankroll = "$1000";
         _ready = true;
         _canIncreaseBet = true;
@@ -104,7 +100,7 @@
     }
 
 
-    private void IncreaseBet(MouseEventArgs obj)
+    private void IncreaseBet(int amount)
     {
         if (_bet == null)
         {
@@ -112,9 +108,9 @@
             ((BetControl)_dynamicBetControl.Instance)?.Initialize(_bet, _controller);
 
         }
-        _bet.IncreaseBase(_betIncrement);
+        _bet.IncreaseBase(amount);
         _canDeal = true;
-        _controller.AdjustPlayerBankroll(_player, -_betIncrement);
+        _controller.AdjustPlayerBankroll(_player, -amount);
         StateHasChanged();
 
     }
@@ -165,3 +161,4 @@
         _ready = false;
     }
 }
+

@@ -6,14 +6,15 @@
 @implements IDisposable
 
 <img @ref="_spritesheet" hidden src="images/cards.png" />
-<BECanvas Width="500" Height="200" @ref="_canvas"></BECanvas>
 <div>
     <strong>@_resultMessage</strong>
 </div>
+<BECanvas Width="500" Height="200" @ref="_canvas"></BECanvas>
+
 
 @code {
 
-    private string _resultMessage;
+    private string _resultMessage = "";
     private DealerHand _dealerHand;
     private GameController _gameController;
     BECanvasComponent _canvas;
@@ -50,7 +51,7 @@
 
     private void GameControllerOnOnNewDeal(object sender, EventArgs e)
     {
-        this._resultMessage = string.Empty;
+        this._resultMessage = "    ";
         _ = _graphicsHelper.ClearCanvas();
         StateHasChanged();
     }

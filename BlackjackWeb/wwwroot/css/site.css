@@ -2,8 +2,100 @@
 
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    background-color: green;
+    background-color: #436e36;  
 }
+
+.flex-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  
+}
+.bankroll {
+    padding: 10px;
+    padding-bottom: 20px;
+}
+.flex-item {
+    width: 50%
+}
+.player-hand-action-container {
+    display: flex;
+    flex-direction: column;
+    padding: 5px;
+    margin-top: -15%
+}
+.player-hand-start-bet-container {
+    display: flex;
+    flex-direction: row;
+    padding: 5px;
+    align-items: center;
+}
+
+.bet-incremenet-container {
+    display: flex;
+    flex-direction: column;
+}
+
+
+.button-action {
+    padding: 5px;
+    margin: 5px
+}
+
+.button-deal {
+    padding: 10px;
+    margin: 20px;
+}
+
+
+.hand-input-container {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    width: 100%;
+    padding: 10px;
+    margin-top: -90%;
+    margin-left: 65%;
+
+}
+
+.hand-input-item1 {
+
+ 
+}
+
+.hand-input-item2 {
+
+}
+
+
+.hand-input-item3 {
+
+}
+
+.game-board {
+    display:flex;
+    flex-direction: column;
+    
+    align-items: center;
+    width: 100%;
+}
+
+.flex-item-middle {
+    /* Customize individual div styles */
+    margin: 10px;
+    padding: 10px;
+    width: 50%;
+}
+
+.flex-item-bottom {
+    /* Customize individual div styles */
+    margin: 10px;
+    padding: 10px;
+    width: 100%;
+    height: 100%;
+}
+
 
 h1:focus {
     outline: none;
