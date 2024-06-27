@@ -6,11 +6,10 @@
 @implements IDisposable
 
 <img @ref="_spritesheet" hidden src="images/cards.png" />
-<div>
-    <strong>@_resultMessage</strong>
-</div>
 <BECanvas Width="500" Height="200" @ref="_canvas"></BECanvas>
-
+<div class="result">
+    <strong class="message">@_resultMessage</strong>
+</div>
 
 @code {
 

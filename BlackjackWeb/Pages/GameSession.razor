@@ -7,47 +7,30 @@
     <div class="game-board">
         <div class="bankroll">
             <div style="font-size: 24px;">Funds:<br /> @_bankroll</div>    
-
         </div>
         <div id="canvasContainerDealer" style="border-style: none; " class="flex-item">
             <DynamicComponent Type="typeof(DealerHandControl)" @ref="_dynamicDealerHandControl"> </DynamicComponent>
         </div>
         <div id="canvasContainer" style="border-style: none;" class="flex-item">
             <DynamicComponent Type="typeof(PlayerHandControl)" @ref="_dynamicPlayerHandControl"> </DynamicComponent>
-
         </div>
         <div class="flex-item">
             <div class="hand-input-container">
-    
                 <div class="hand-input-item2 player-hand-start-bet-container">
-                    <div class="bet-incremenet-container">
-                        
-                        @if (_canIncreaseBet)
-                        {
-                            <button class="button-action" @onclick="(() => this.IncreaseBet(5))">$5</button>
-                            <button class="button-action" @onclick="(() => this.IncreaseBet(10))">$10</button>
-                            <button class="button-action" @onclick="(() => this.IncreaseBet(25))">$25</button>
-                            <button class="button-action" @onclick="(() => this.IncreaseBet(50))">$50</button>
-                        }
-              
+                    <div class="bet-incremenet-container" style="display: @(_canIncreaseBet ? "": "none")">
+                        <button class="button-action" @onclick="(() => this.IncreaseBet(5))">$10</button>
+                        <button class="button-action" @onclick="(() => this.IncreaseBet(10))">$25</button>
+                        <button class="button-action" @onclick="(() => this.IncreaseBet(25))">$50</button>
+                        <button class="button-action" @onclick="(() => this.IncreaseBet(50))">$100</button>
                     </div>
-                    
-                    @if (_canDeal)
-                    {
-                        <button @onclick="Deal" class="button-deal">Deal</button>
-                    }
-       
-         
+                    <button @onclick="Deal" class="button-deal" style="display: @(_canDeal ? "block": "none")">Deal</button>
                 </div>
             </div>
-            
         </div>
-        
         <div class="flex-item">
             <DynamicComponent Type="typeof(BetControl)" @ref="_dynamicBetControl"></DynamicComponent>
         </div>
     </div>
-
 }
 
 @code {
