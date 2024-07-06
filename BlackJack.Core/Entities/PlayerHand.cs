@@ -47,6 +47,11 @@ namespace Blackjack.Core.Entities
             OnLoseHand?.Invoke(this);
         }
 
+        public void DealerBlackJack()
+        {
+            Result = Result.Lost;
+        }
+
         public void Push()
         {
             Result = Result.Push;

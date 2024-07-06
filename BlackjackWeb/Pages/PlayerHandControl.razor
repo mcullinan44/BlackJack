@@ -59,7 +59,15 @@
         _playerHand.OnTakeCardForSplit += PlayerHandOnOnTakeCardForSplit;
         _gameController.OnNewDeal += GameControllerOnOnNewDeal;
         _gameController.OnGameEnd += GameControllerOnOnGameEnd;
+
+        _gameController.Dealer.Hand.OnDealerBlackjack +=   HandOnOnDealerBlackjack;
         _resultMessage = string.Empty;
+        StateHasChanged();
+    }
+
+    private void HandOnOnDealerBlackjack(object sender, CardReceivedEventArgs args)
+    {
+        _resultMessage = "DEALER BLACKJACK. PLAYER LOSES.";
         StateHasChanged();
     }
 
@@ -129,7 +137,6 @@
         StateHasChanged();
     }
 
-
     private void PlayerHandOnOnCardReceived(object sender, CardReceivedEventArgs args)
     {
         if(_playerHand.State == State.Playing)
@@ -141,6 +148,10 @@
 
     private void OnHit(MouseEventArgs obj)
     {
+        
+        
+        _hittable = _doubleable = false;
+        StateHasChanged();
         _playerHand.Hit();
         StateHasChanged();
     }
@@ -153,6 +164,7 @@
 
     private void OnDouble(MouseEventArgs obj)
     {
+        _hittable = _doubleable = false;
         _playerHand.DoubleDown();
         DisableButtons();
         StateHasChanged();

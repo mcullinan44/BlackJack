@@ -115,13 +115,13 @@ namespace Blackjack.Core
             DealARoundOfCards();
 
             await Task.Delay(500);
-            GiveDealerACard();
+            GiveDealerACard(DealType.Standard);
 
             await Task.Delay(250);
             DealARoundOfCards();
 
             await Task.Delay(250);
-            GiveDealerACard();
+            GiveDealerACard(DealType.Standard);
 
             //check if the dealer has blackjack.
             if (Dealer.Hand.CurrentScore == 21)
@@ -158,8 +158,10 @@ namespace Blackjack.Core
                     {
                         //give dealer blackjack
                         Dealer.Hand.Blackjack();
-                        //player loses
-                        player.ActiveHand.Lost();
+
+                        player.ActiveHand.DealerBlackJack();
+                        
+             
                     }
                 }
             }

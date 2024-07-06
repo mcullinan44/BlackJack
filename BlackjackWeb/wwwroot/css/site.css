@@ -5,6 +5,35 @@ html, body {
     background-color: #436e36;  
 }
 
+.table-container{
+    /* Customize individual div styles */
+
+    padding: 10px;
+    width: 100%;
+    /*background-color: pink;*/
+    height: 80vh;
+}
+
+.table {
+    display: flex;
+    padding: 15px;
+    /*background-color: yellow;*/
+    width: 75%;
+    height: 75vh;
+}
+
+.game-board {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+/*    background-color: blue;*/
+}
+
+.meta-data {
+    /*background-color: red;*/
+    width: 100%;
+}
 
 .flex-container {
     display: flex;
@@ -13,16 +42,35 @@ html, body {
   
 }
 .bankroll {
-    padding: 5%;
-    padding-bottom: 5%;
+    padding: 1%;
+    /*background-color:lightgray;*/
+
 }
+
+.player-hand-control {
+    width: 45%;
+    /*background-color: gold;*/
+  
+}
+
+.dealer-hand-control {
+    width: 45%;
+    /*background-color: lightblue;*/
+}
+
 .flex-item {
     width: 45%
 }
+
+.bet-control {
+    width: 45%;
+}
+
 .player-hand-action-container {
     display: flex;
     flex-direction: column;
-    padding: 5%;
+    padding: 10%;
+    background-color: brown;
     margin-top: -15%
 }
 .player-hand-start-bet-container {
@@ -30,12 +78,14 @@ html, body {
     flex-direction: column;
     padding: 5%;
     align-items: center;
+    background-color: brown;
 }
 
 .bet-incremenet-container {
     display: flex;
     flex-direction: row;
-    margin-left: -25%
+    /*background-color: aliceblue;*/
+    /*margin-left: -25%*/
 }
 
 
@@ -43,13 +93,13 @@ html, body {
     box-shadow: inset 9px 1px 10px -2px #fff6af;
     background: linear-gradient(to bottom, #ffec64 5%, #ffab23 100%);
     background-color: #ffec64;
-    border-radius: 37px;
+    border-radius: 35px;
     border: 2px solid #ffaa22;
     display: inline-block;
     cursor: pointer;
     color: #333333;
     font-family: Arial;
-    font-size: 15px;
+    font-size: 12px;
     font-weight: bold;
     padding: 10% 7px;
     margin: 1%;
@@ -69,8 +119,10 @@ html, body {
 
 
 .button-deal {
-    padding: 10px;
-    margin: 20px;
+    width:100%;
+    margin-top:5%;
+    height: 100%;
+    padding: 5%;
 }
 
 
@@ -97,7 +149,8 @@ html, body {
 }
 
 .result {
-    width: 120%
+    width: 100%;
+    margin-top: -1%;
     
 }
 
@@ -106,20 +159,9 @@ html, body {
     font-size: larger;
 }
 
-.game-board {
-    display:flex;
-    flex-direction: column;
-    
-    align-items: center;
-    width: 100%;
-}
 
-.flex-item-middle {
-    /* Customize individual div styles */
-    margin: 10px;
-    padding: 10px;
-    width: 50%;
-}
+
+
 
 .flex-item-bottom {
     /* Customize individual div styles */

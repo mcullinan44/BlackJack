@@ -29,7 +29,7 @@
 
     private void StartNewSession()
     {
-        _controller = new GameController(4);
+        _controller = new GameController(1);
         _player = new Player(1, string.Empty);
         _controller.OnGameEnd += ControllerOnOnGameEnd;
         _controller.OnNewDeal += ControllerOnOnNewDeal;
